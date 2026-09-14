@@ -14,13 +14,19 @@ clock = pygame.time.Clock()
 pygame.display.update()
 clock.tick(60)
 
+x = 75
+
 gameFlag = True
 
 while gameFlag:
-    # game stuff
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             gameFlag = False
+    
+    pygame.draw.rect(screen, (255, 0, 0), [x, 550, 50, 20], 2)
+
+    pygame.display.update()
+    clock.tick(60)
 
 pygame.quit()
 quit()
