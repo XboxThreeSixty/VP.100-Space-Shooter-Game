@@ -15,6 +15,7 @@ pygame.display.update()
 clock.tick(60)
 
 x = 75
+pressed = pygame.key.get_pressed()
 
 gameFlag = True
 
@@ -22,7 +23,12 @@ while gameFlag:
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             gameFlag = False
-    
+
+    if pressed[pygame.K_a]:
+        x -= 3
+    if pressed[pygame.K_d]:
+        x += 3
+
     pygame.draw.rect(screen, (255, 0, 0), [x, 550, 50, 20], 2)
 
     pygame.display.update()
