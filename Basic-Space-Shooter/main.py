@@ -11,11 +11,9 @@ screen = pygame.display.set_mode((screenWidth, screenHeight))
 pygame.display.set_caption("Basic Space Shooter")
 screen.fill((0, 0, 0))
 clock = pygame.time.Clock()
-pygame.display.update()
 clock.tick(60)
 
 x = 75
-pressed = pygame.key.get_pressed()
 
 gameFlag = True
 
@@ -24,10 +22,19 @@ while gameFlag:
         if event.type == pygame.QUIT:
             gameFlag = False
 
+    pressed = pygame.key.get_pressed()
     if pressed[pygame.K_a]:
-        x -= 3
+        screen.fill((0, 0, 0))
+        if x > 0:
+            x -= 3
+        else:
+            x -= 0
     if pressed[pygame.K_d]:
-        x += 3
+        screen.fill((0, 0, 0))
+        if x < 750:
+            x += 3
+        else: 
+            x += 0
 
     pygame.draw.rect(screen, (255, 0, 0), [x, 550, 50, 20], 2)
 
