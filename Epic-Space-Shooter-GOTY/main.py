@@ -14,6 +14,7 @@ clock = pygame.time.Clock()
 
 x = 75
 bullet_y = 610
+bullet_x = 0
 bullets = []
 bulletOnScreen = False
 
@@ -48,30 +49,31 @@ class Bullet:
 
 def create_bullets(bullets):
     i = 0
-    for i in range(1, 6):
-        new_bullet = Bullet(name = "bullet_" + str(i), y = 610)
-        bullets.append(new_bullet)
-
-def reload(bullets):
-    pass
+    if len(bullets) < 1:
+        for i in range(1, 6):
+            new_bullet = Bullet(name = "bullet_" + str(i), y = 610)
+            bullets.append(new_bullet)
+        print("Magazine: 5/5 bullets")
 
 def draw_bullet(x, bullet_y, bullets):
     if len(bullets) > 0:
         dew_hitbox.topleft = (x, bullet_y)
         bullets.pop(0)
-        print([Bullet._name for Bullet in bullets])
         if bullet_y <= -50:
             bullet_y = 610
+    print("Magazine: " +str(len(bullets))+"/5 bullets")
     return bullet_y
 
-def update_bullet(x, bullet_y):
-    dew_hitbox.topleft = (x, bullet_y)
+def update_bullet(bullet_y):
+    dew_hitbox.y = bullet_y
     if bullet_y > -50:
         bullet_y -= 15
     return bullet_y
 
 gameFlag = True
 create_bullets(bullets)
+
+pygame.key.set_repeat(400, 400)
 
 # Game Loop
 while gameFlag:
@@ -82,18 +84,18 @@ while gameFlag:
             if event.key == pygame.K_SPACE:
                 bullet_y = draw_bullet(x, bullet_y, bullets)
                 bulletOnScreen = True
+            if event.key == pygame.K_r:
+                create_bullets(bullets)
 
     pressed = pygame.key.get_pressed()
     if pressed[pygame.K_a]:
         move_player("left")
     if pressed[pygame.K_d]:
         move_player("right")
-    if pressed[pygame.K_r]:
-        reload(bullets)
 
     draw_player()
     if bulletOnScreen:
-        bullet_y = update_bullet(x, bullet_y)
+        bullet_y = update_bullet(bullet_y)
 
     screen.blit(dew, dew_hitbox)
 
