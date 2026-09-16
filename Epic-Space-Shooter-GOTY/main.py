@@ -20,7 +20,6 @@ bulletOnScreen = False
 mtndew = pygame.image.load("mountaindew.png").convert_alpha()
 dew = pygame.transform.scale(mtndew, (50, 50))
 dew_hitbox = dew.get_rect()
-# dew_hitbox.topleft = (150, 100)
 
 # Functions
 def draw_player():
@@ -56,10 +55,13 @@ def create_bullets(bullets):
 def reload(bullets):
     pass
 
-def draw_bullet(x, bullet_y):
-    dew_hitbox.topleft = (x, bullet_y)
-    if bullet_y <= -50:
-        bullet_y = 610
+def draw_bullet(x, bullet_y, bullets):
+    if len(bullets) > 0:
+        dew_hitbox.topleft = (x, bullet_y)
+        bullets.pop(0)
+        print([Bullet._name for Bullet in bullets])
+        if bullet_y <= -50:
+            bullet_y = 610
     return bullet_y
 
 def update_bullet(x, bullet_y):
@@ -76,15 +78,16 @@ while gameFlag:
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             gameFlag = False
+        elif event.type == pygame.KEYDOWN:
+            if event.key == pygame.K_SPACE:
+                bullet_y = draw_bullet(x, bullet_y, bullets)
+                bulletOnScreen = True
 
     pressed = pygame.key.get_pressed()
     if pressed[pygame.K_a]:
         move_player("left")
     if pressed[pygame.K_d]:
         move_player("right")
-    if pressed[pygame.K_SPACE]:
-        bullet_y = draw_bullet(x, bullet_y)
-        bulletOnScreen = True
     if pressed[pygame.K_r]:
         reload(bullets)
 
