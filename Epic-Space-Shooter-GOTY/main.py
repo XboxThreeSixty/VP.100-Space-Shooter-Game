@@ -31,12 +31,12 @@ def move_player(direction):
     global x
     if direction == "left":
         if x > 0:
-            x -= 3
+            x -= 5
         else:
             x -= 0
     elif direction == "right":
         if x < 1230:
-            x += 3
+            x += 5
         else: 
             x += 0
 
@@ -58,11 +58,14 @@ def reload(bullets):
 
 def draw_bullet(x, bullet_y):
     dew_hitbox.topleft = (x, bullet_y)
+    if bullet_y <= -50:
+        bullet_y = 610
+    return bullet_y
 
 def update_bullet(x, bullet_y):
     dew_hitbox.topleft = (x, bullet_y)
     if bullet_y > -50:
-        bullet_y -= 5
+        bullet_y -= 15
     return bullet_y
 
 gameFlag = True
@@ -80,7 +83,7 @@ while gameFlag:
     if pressed[pygame.K_d]:
         move_player("right")
     if pressed[pygame.K_SPACE]:
-        draw_bullet(x, bullet_y)
+        bullet_y = draw_bullet(x, bullet_y)
         bulletOnScreen = True
     if pressed[pygame.K_r]:
         reload(bullets)
