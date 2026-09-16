@@ -8,13 +8,14 @@ screenWidth = 1280
 screenHeight = 720
 
 screen = pygame.display.set_mode((screenWidth, screenHeight))
-pygame.display.set_caption("Basic Space Shooter")
+pygame.display.set_caption("Epic Space Shooter: Game of the Year Edition")
 screen.fill((0, 0, 0))
 clock = pygame.time.Clock()
 
 x = 75
-bullet_y = 490
+bullet_y = 610
 bullets = []
+bulletOnScreen = False
 
 mtndew = pygame.image.load("mountaindew.png").convert_alpha()
 dew = pygame.transform.scale(mtndew, (50, 50))
@@ -24,7 +25,7 @@ dew_hitbox = dew.get_rect()
 # Functions
 def draw_player():
     screen.fill((0, 0, 0))
-    pygame.draw.rect(screen, (255, 0, 0), [x, 550, 50, 20], 0)
+    pygame.draw.rect(screen, (255, 0, 0), [x, 670, 50, 20], 0)
 
 def move_player(direction):
     global x
@@ -40,29 +41,32 @@ def move_player(direction):
             x += 0
 
 class Bullet:
-    def __init__(self, name):
-        self.name = name
+    def __init__(self, name, y):
+        self._name = name
+        self._y = y
+    def y(self):
+        return self._y
 
-def create_bullets():
-    global bullets
+def create_bullets(bullets):
     i = 0
     for i in range(1, 6):
-        new_bullet = Bullet(name = "bullet_" + str(i))
+        new_bullet = Bullet(name = "bullet_" + str(i), y = 610)
         bullets.append(new_bullet)
 
-def draw_bullet():
-    global x
-    global bullet_y
+def reload(bullets):
+    pass
+
+def draw_bullet(x, bullet_y):
     dew_hitbox.topleft = (x, bullet_y)
 
-def update_bullet():
-    global x
-    global bullet_y
+def update_bullet(x, bullet_y):
+    dew_hitbox.topleft = (x, bullet_y)
     if bullet_y > -50:
         bullet_y -= 5
+    return bullet_y
 
 gameFlag = True
-create_bullets()
+create_bullets(bullets)
 
 # Game Loop
 while gameFlag:
@@ -76,12 +80,14 @@ while gameFlag:
     if pressed[pygame.K_d]:
         move_player("right")
     if pressed[pygame.K_SPACE]:
-        draw_bullet()
+        draw_bullet(x, bullet_y)
+        bulletOnScreen = True
     if pressed[pygame.K_r]:
-        pass
+        reload(bullets)
 
     draw_player()
-    update_bullet()
+    if bulletOnScreen:
+        bullet_y = update_bullet(x, bullet_y)
 
     screen.blit(dew, dew_hitbox)
 
