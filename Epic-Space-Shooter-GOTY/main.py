@@ -41,17 +41,19 @@ def move_player(direction):
             x += 0
 
 class Bullet:
-    def __init__(self, name, y):
+    def __init__(self, name, y, image):
         self._name = name
         self._y = y
-    def y(self):
-        return self._y
+        self._image = image 
+        self._rect = image.get_rect()
+    def y(self, y):
+        self._y = y
 
 def create_bullets(bullets):
     i = 0
     if len(bullets) < 1:
         for i in range(1, 6):
-            new_bullet = Bullet(name = "bullet_" + str(i), y = 610)
+            new_bullet = Bullet(name = "bullet_" + str(i), y = 610, image = dew.copy())
             bullets.append(new_bullet)
         print("Magazine: 5/5 bullets")
 
