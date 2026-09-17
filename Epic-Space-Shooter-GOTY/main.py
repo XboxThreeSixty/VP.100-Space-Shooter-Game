@@ -48,6 +48,8 @@ class Bullet:
         self._rect = image.get_rect()
     def y(self, y):
         self._y = y
+    def get_y(self):
+        return self._y
 
 def create_bullets(bullets):
     i = 0
@@ -57,20 +59,18 @@ def create_bullets(bullets):
             bullets.append(new_bullet)
         print("Magazine: 5/5 bullets")
 
-def draw_bullet(x, bullet_y, bullets):
+def draw_bullet(x, bullets):
     if len(bullets) > 0:
-        dew_hitbox.topleft = (x, bullet_y)
-        bullets.pop(0)
-        if bullet_y <= -50:
-            bullet_y = 610
+        bullets[0]._rect.topleft = (x, bullets[0].get_y())
+        # bullets.pop(0)
+        if bullets[0].get_y() <= -50:
+            bullets[0].y(610)
     print("Magazine: " +str(len(bullets))+"/5 bullets")
-    return bullet_y
 
-def update_bullet(bullet_y):
-    dew_hitbox.y = bullet_y
-    if bullet_y > -50:
-        bullet_y -= 15
-    return bullet_y
+def update_bullet():
+    bullets[0]._rect.y = bullets[0].get_y()
+    if bullets[0].get_y() > -50:
+        bullets[0].y(bullets[0].get_y() - 15)
 
 gameFlag = True
 create_bullets(bullets)
@@ -84,7 +84,7 @@ while gameFlag:
             gameFlag = False
         elif event.type == pygame.KEYDOWN:
             if event.key == pygame.K_SPACE:
-                bullet_y = draw_bullet(x, bullet_y, bullets)
+                draw_bullet(x, bullets)
                 bulletOnScreen = True
             if event.key == pygame.K_r:
                 create_bullets(bullets)
@@ -97,9 +97,9 @@ while gameFlag:
 
     draw_player()
     if bulletOnScreen:
-        bullet_y = update_bullet(bullet_y)
+        update_bullet()
 
-    screen.blit(dew, dew_hitbox)
+    screen.blit(bullets[0]._image, bullets[0]._rect)
 
     pygame.display.update()
     clock.tick(60)
