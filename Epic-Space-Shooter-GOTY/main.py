@@ -16,6 +16,7 @@ x = 75
 bullets = []
 firedBullets = []
 b = -1
+magIndex = 5
 
 # Original rect
 mtndew = pygame.image.load("mountaindew.png").convert_alpha()
@@ -72,15 +73,14 @@ def create_bullets(bullets):
             bullets.append(new_bullet)
         print("Magazine: 5/5 bullets")
 
-def draw_bullet(x, bullets, firedBullets, b):
-    if len(bullets) > 0:
+def draw_bullet(x, bullets, b, magIndex):
+    if magIndex >= 0:
         bullets[b]._rect.x = x
         bullets[b].topleft = (bullets[b].get_x(), bullets[b].get_y())
-        # firedBullets.append(bullets.pop(0))
+        print("Magazine: "+str(magIndex)+"/5 bullets")
 
         if len(bullets) > 0 and bullets[b].get_y() <= -50:
             bullets[b].y(610)
-    print("Magazine: " +str(len(bullets))+"/5 bullets")
 
 def update_bullet(i):
     bullets[i]._rect.y = bullets[i].get_y()
@@ -103,9 +103,13 @@ while runningGame:
                     b += 1
                 elif b == 4:
                     b = 0
-                draw_bullet(x, bullets, firedBullets, b)
+                
+                magIndex -= 1
+                draw_bullet(x, bullets, b, magIndex)
             if event.key == pygame.K_r:
-                create_bullets(bullets)
+                if magIndex != 5:
+                    magIndex = 5
+                    print("Magazine: 5/5 bullets")
 
     pressed = pygame.key.get_pressed()
     if pressed[pygame.K_a]:
