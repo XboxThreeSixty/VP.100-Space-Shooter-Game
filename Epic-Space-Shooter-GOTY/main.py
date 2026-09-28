@@ -15,6 +15,7 @@ clock = pygame.time.Clock()
 x = 75
 bullets = []
 firedBullets = []
+b = -1
 
 # Original rect
 mtndew = pygame.image.load("mountaindew.png").convert_alpha()
@@ -71,14 +72,14 @@ def create_bullets(bullets):
             bullets.append(new_bullet)
         print("Magazine: 5/5 bullets")
 
-def draw_bullet(x, bullets, firedBullets):
+def draw_bullet(x, bullets, firedBullets, b):
     if len(bullets) > 0:
-        bullets[0]._rect.x = x
-        bullets[0].topleft = (bullets[0].get_x(), bullets[0].get_y())
+        bullets[b]._rect.x = x
+        bullets[b].topleft = (bullets[b].get_x(), bullets[b].get_y())
         # firedBullets.append(bullets.pop(0))
 
-        if len(bullets) > 0 and bullets[0].get_y() <= -50:
-            bullets[0].y(610)
+        if len(bullets) > 0 and bullets[b].get_y() <= -50:
+            bullets[b].y(610)
     print("Magazine: " +str(len(bullets))+"/5 bullets")
 
 def update_bullet(i):
@@ -98,7 +99,11 @@ while runningGame:
             runningGame = False
         elif event.type == pygame.KEYDOWN:
             if event.key == pygame.K_SPACE:
-                draw_bullet(x, bullets, firedBullets)
+                if b < 4:
+                    b += 1
+                elif b == 4:
+                    b = 0
+                draw_bullet(x, bullets, firedBullets, b)
             if event.key == pygame.K_r:
                 create_bullets(bullets)
 
