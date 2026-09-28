@@ -13,11 +13,10 @@ screen.fill((0, 0, 0))
 clock = pygame.time.Clock()
 
 x = 75
-bullet_y = 610
-bullet_x = 0
 bullets = []
-bulletOnScreen = False
+firedBullets = []
 
+# Original rect
 mtndew = pygame.image.load("mountaindew.png").convert_alpha()
 dew = pygame.transform.scale(mtndew, (50, 50))
 dew_hitbox = dew.get_rect()
@@ -41,51 +40,65 @@ def move_player(direction):
             x += 0
 
 class Bullet:
-    def __init__(self, name, y, image):
+    def __init__(self, name, x, y, image):
         self._name = name
-        self._y = y
         self._image = image 
         self._rect = image.get_rect()
+        self._rect.x = x
+        self._rect.y = y
+        self._fired = False
+    def x(self, x):
+        self._rect.x = x
+    def get_x(self):
+        return self._rect.x
     def y(self, y):
-        self._y = y
+        self._rect.y = y
     def get_y(self):
-        return self._y
+        return self._rect.y
+    def topleft(self, x, y):
+        self._rect.topleft = (x, y)
+    def check(self):
+        return self._fired
+    def changeStatus(self, bool):
+        self._fired = bool
 
 def create_bullets(bullets):
     i = 0
     if len(bullets) < 1:
+        firedBullets.clear()
         for i in range(1, 6):
-            new_bullet = Bullet(name = "bullet_" + str(i), y = 610, image = dew.copy())
+            new_bullet = Bullet(name = "bullet_" + str(i), x = 1, y = 610, image = dew.copy())
             bullets.append(new_bullet)
         print("Magazine: 5/5 bullets")
 
-def draw_bullet(x, bullets):
+def draw_bullet(x, bullets, firedBullets):
     if len(bullets) > 0:
-        bullets[0]._rect.topleft = (x, bullets[0].get_y())
-        # bullets.pop(0)
-        if bullets[0].get_y() <= -50:
+        bullets[0]._rect.x = x
+        bullets[0].topleft = (bullets[0].get_x(), bullets[0].get_y())
+        # firedBullets.append(bullets.pop(0))
+
+        if len(bullets) > 0 and bullets[0].get_y() <= -50:
             bullets[0].y(610)
     print("Magazine: " +str(len(bullets))+"/5 bullets")
 
-def update_bullet():
-    bullets[0]._rect.y = bullets[0].get_y()
-    if bullets[0].get_y() > -50:
-        bullets[0].y(bullets[0].get_y() - 15)
+def update_bullet(i):
+    bullets[i]._rect.y = bullets[i].get_y()
+    if bullets[i].get_y() > -50:
+        bullets[i].y(bullets[i].get_y() - 15)
 
-gameFlag = True
+runningGame = True
 create_bullets(bullets)
 
 pygame.key.set_repeat(400, 400)
 
 # Game Loop
-while gameFlag:
+while runningGame:
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
-            gameFlag = False
+            runningGame = False
         elif event.type == pygame.KEYDOWN:
             if event.key == pygame.K_SPACE:
-                draw_bullet(x, bullets)
-                bulletOnScreen = True
+                draw_bullet(x, bullets, firedBullets)
             if event.key == pygame.K_r:
                 create_bullets(bullets)
 
@@ -96,10 +109,14 @@ while gameFlag:
         move_player("right")
 
     draw_player()
-    if bulletOnScreen:
-        update_bullet()
+    i = 0
+    for i in range(len(bullets)):
+        if bullets[i].check:
+            update_bullet(i)
 
-    screen.blit(bullets[0]._image, bullets[0]._rect)
+    # if len(bullets) > 0:
+    for i in range(len(bullets)):
+        screen.blit(bullets[i]._image, bullets[i]._rect)
 
     pygame.display.update()
     clock.tick(60)
