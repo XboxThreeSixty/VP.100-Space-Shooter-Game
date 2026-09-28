@@ -1,5 +1,6 @@
 import pygame
 import os
+import sys
 os.environ['SDL_VIDEO_WINDOW_POS'] = "%d,%d" % (0,0)
 
 pygame.init()
@@ -17,12 +18,22 @@ bullets = []
 bulletIndex = -1
 magIndex = 5
 
-# Original rect
+# Text
+arial = pygame.font.SysFont("Arial", 30)
+title = arial.render("placeholder text", False, (0, 0, 0))
+# screen.blit(title, (0, 0)) prints the text onto the screen; the 2 numbers are x and y values. This will be used for a future title screen.
+
+# Bullet
 mtndew = pygame.image.load("mountaindew.png").convert_alpha()
 dew = pygame.transform.scale(mtndew, (50, 50))
 dew_hitbox = dew.get_rect()
 
-# Functions
+# Enemy
+dorito = pygame.image.load("dorito.png").convert_alpha()
+dor = pygame.transform.scale(dorito, (50, 50))
+dorito_hitbox = dor.get_rect()
+
+# Player Functions
 def draw_player():
     screen.fill((0, 0, 0))
     pygame.draw.rect(screen, (255, 0, 0), [x, 670, 50, 20], 0)
@@ -40,6 +51,7 @@ def move_player(direction):
         else: 
             x += 0
 
+# Bullet class and Functions
 class Bullet:
     def __init__(self, name, x, y, image):
         self._name = name
@@ -84,6 +96,25 @@ def update_bullet(i):
     bullets[i]._rect.y = bullets[i].get_y()
     if bullets[i].get_y() > -50:
         bullets[i].y(bullets[i].get_y() - 15)
+
+# Enemy Class and Functions
+class Enemy:
+    def __init__(self, name, x, y, image):
+        self._name = name
+        self._image = image 
+        self._rect = image.get_rect()
+        self._rect.x = x
+        self._rect.y = y
+    def x(self, x):
+        self._rect.x = x
+    def get_x(self):
+        return self._rect.x
+    def y(self, y):
+        self._rect.y = y
+    def get_y(self):
+        return self._rect.y
+    def topleft(self, x, y):
+        self._rect.topleft = (x, y)
 
 runningGame = True
 create_bullets(bullets)
