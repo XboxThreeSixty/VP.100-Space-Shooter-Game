@@ -14,8 +14,7 @@ clock = pygame.time.Clock()
 
 x = 75
 bullets = []
-firedBullets = []
-b = -1
+bulletIndex = -1
 magIndex = 5
 
 # Original rect
@@ -67,20 +66,19 @@ class Bullet:
 def create_bullets(bullets):
     i = 0
     if len(bullets) < 1:
-        firedBullets.clear()
         for i in range(1, 6):
-            new_bullet = Bullet(name = "bullet_" + str(i), x = 1, y = 610, image = dew.copy())
+            new_bullet = Bullet(name = "bullet_" + str(i), x = 1, y = -50, image = dew.copy())
             bullets.append(new_bullet)
         print("Magazine: 5/5 bullets")
 
-def draw_bullet(x, bullets, b, magIndex):
+def draw_bullet(x, bullets, bulletIndex, magIndex):
     if magIndex >= 0:
-        bullets[b]._rect.x = x
-        bullets[b].topleft = (bullets[b].get_x(), bullets[b].get_y())
+        bullets[bulletIndex]._rect.x = x
+        bullets[bulletIndex].topleft = (bullets[bulletIndex].get_x(), bullets[bulletIndex].get_y())
         print("Magazine: "+str(magIndex)+"/5 bullets")
 
-        if len(bullets) > 0 and bullets[b].get_y() <= -50:
-            bullets[b].y(610)
+        if magIndex > 0 and bullets[bulletIndex].get_y() <= -50:
+            bullets[bulletIndex].y(610)
 
 def update_bullet(i):
     bullets[i]._rect.y = bullets[i].get_y()
@@ -99,13 +97,13 @@ while runningGame:
             runningGame = False
         elif event.type == pygame.KEYDOWN:
             if event.key == pygame.K_SPACE:
-                if b < 4:
-                    b += 1
-                elif b == 4:
-                    b = 0
+                if bulletIndex < 4:
+                    bulletIndex += 1
+                elif bulletIndex == 4:
+                    bulletIndex = 0
                 
                 magIndex -= 1
-                draw_bullet(x, bullets, b, magIndex)
+                draw_bullet(x, bullets, bulletIndex, magIndex)
             if event.key == pygame.K_r:
                 if magIndex != 5:
                     magIndex = 5
@@ -123,7 +121,6 @@ while runningGame:
         if bullets[i].check:
             update_bullet(i)
 
-    # if len(bullets) > 0:
     for i in range(len(bullets)):
         screen.blit(bullets[i]._image, bullets[i]._rect)
 
