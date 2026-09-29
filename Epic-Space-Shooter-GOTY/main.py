@@ -1,6 +1,7 @@
 import pygame
 import os
 import sys
+import random
 os.environ['SDL_VIDEO_WINDOW_POS'] = "%d,%d" % (0,0)
 
 pygame.init()
@@ -119,10 +120,22 @@ class Enemy:
 def create_enemies(enemies):
     i = 0
     for i in range(1, 11):
-        pass
+        new_enemy = Enemy(name = "enemy_" + str(i), x = random.randrange(1, 1231), y = 0, image = dor.copy())
+        enemies.append(new_enemy)
+
+def draw_enemies(enemies):
+    i = 0
+    for i in range(1, 11):
+        enemies[i].topleft(enemies[i].get_x(), enemies[i].get_y())
+
+def update_enemies(i):
+    enemies[i]._rect.y = enemies[i].get_y()
+    if enemies[i].get_y() < 720:
+        enemies[i].y(enemies[i].get_() + 10)
 
 runningGame = True
 create_bullets(bullets)
+create_enemies(enemies)
 
 pygame.key.set_repeat(400, 400)
 
@@ -143,7 +156,7 @@ while runningGame:
             if event.key == pygame.K_r:
                 if magIndex != 5:
                     magIndex = 5
-                    print("Magazine: 5/5 bullets")
+                    print("\nMagazine: 5/5 bullets")
 
     pressed = pygame.key.get_pressed()
     if pressed[pygame.K_a]:
