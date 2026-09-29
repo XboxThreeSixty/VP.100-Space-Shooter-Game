@@ -15,6 +15,7 @@ clock = pygame.time.Clock()
 
 x = 75
 bullets = []
+enemies = []
 bulletIndex = -1
 magIndex = 5
 
@@ -77,11 +78,10 @@ class Bullet:
 
 def create_bullets(bullets):
     i = 0
-    if len(bullets) < 1:
-        for i in range(1, 6):
-            new_bullet = Bullet(name = "bullet_" + str(i), x = 1, y = -50, image = dew.copy())
-            bullets.append(new_bullet)
-        print("Magazine: 5/5 bullets")
+    for i in range(1, 6):
+        new_bullet = Bullet(name = "bullet_" + str(i), x = 1, y = -50, image = dew.copy())
+        bullets.append(new_bullet)
+    print("Magazine: 5/5 bullets")
 
 def draw_bullet(x, bullets, bulletIndex, magIndex):
     if magIndex >= 0:
@@ -89,7 +89,7 @@ def draw_bullet(x, bullets, bulletIndex, magIndex):
         bullets[bulletIndex].topleft = (bullets[bulletIndex].get_x(), bullets[bulletIndex].get_y())
         print("Magazine: "+str(magIndex)+"/5 bullets")
 
-        if magIndex > 0 and bullets[bulletIndex].get_y() <= -50:
+        if magIndex >= 0 and bullets[bulletIndex].get_y() <= -50:
             bullets[bulletIndex].y(610)
 
 def update_bullet(i):
@@ -115,6 +115,11 @@ class Enemy:
         return self._rect.y
     def topleft(self, x, y):
         self._rect.topleft = (x, y)
+
+def create_enemies(enemies):
+    i = 0
+    for i in range(1, 11):
+        pass
 
 runningGame = True
 create_bullets(bullets)
