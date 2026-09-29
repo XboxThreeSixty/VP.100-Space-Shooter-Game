@@ -127,16 +127,17 @@ def create_enemies(enemies):
         enemies.append(new_enemy)
 
 def draw_enemies():
-    for i in range(10):
-        enemies[i].changeStatus(True)
-        enemies[i].topleft(enemies[i].get_x(), enemies[i].get_y())
-        if enemies[i].get_y() >= 720:
-            enemies[i].y(-50)
+    i = random.randrange(0, 10)
+    enemies[i].changeStatus(True)
+    enemies[i].topleft(enemies[i].get_x(), enemies[i].get_y())
+    if enemies[i].get_y() >= 720:
+        enemies[i].y(-50)
+        enemies[i].x(random.randrange(1, 1231))
 
 def update_enemy(i):
     enemies[i]._rect.y = enemies[i].get_y()
     if enemies[i].get_y() < 720:
-        enemies[i].y(enemies[i].get_y() + 3)
+        enemies[i].y(enemies[i].get_y() + 1.5)
 
 runningGame = True
 create_bullets(bullets)
@@ -178,7 +179,10 @@ while runningGame:
     for i in range(len(bullets)):
         screen.blit(bullets[i]._image, bullets[i]._rect)
 
-    draw_enemies()
+    rand = random.randrange(0, 10)
+    if rand == 1: 
+        draw_enemies()
+
     for i in range(len(enemies)):
         if enemies[i].check():
             update_enemy(i)
