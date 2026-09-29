@@ -78,7 +78,6 @@ class Bullet:
         self._fired = bool
 
 def create_bullets(bullets):
-    i = 0
     for i in range(1, 6):
         new_bullet = Bullet(name = "bullet_" + str(i), x = 1, y = -50, image = dew.copy())
         bullets.append(new_bullet)
@@ -106,6 +105,7 @@ class Enemy:
         self._rect = image.get_rect()
         self._rect.x = x
         self._rect.y = y
+        self._alive = False
     def x(self, x):
         self._rect.x = x
     def get_x(self):
@@ -116,22 +116,27 @@ class Enemy:
         return self._rect.y
     def topleft(self, x, y):
         self._rect.topleft = (x, y)
+    def check(self):
+        return self._alive
+    def changeStatus(self, bool):
+        self._alive = bool
 
 def create_enemies(enemies):
-    i = 0
     for i in range(1, 11):
-        new_enemy = Enemy(name = "enemy_" + str(i), x = random.randrange(1, 1231), y = 0, image = dor.copy())
+        new_enemy = Enemy(name = "enemy_" + str(i), x = random.randrange(1, 1231), y = -50, image = dor.copy())
         enemies.append(new_enemy)
 
-def draw_enemies(enemies):
-    i = 0
-    for i in range(1, 11):
+def draw_enemies():
+    for i in range(10):
+        enemies[i].changeStatus(True)
         enemies[i].topleft(enemies[i].get_x(), enemies[i].get_y())
+        if enemies[i].get_y() >= 720:
+            enemies[i].y(-50)
 
-def update_enemies(i):
+def update_enemy(i):
     enemies[i]._rect.y = enemies[i].get_y()
     if enemies[i].get_y() < 720:
-        enemies[i].y(enemies[i].get_() + 10)
+        enemies[i].y(enemies[i].get_y() + 3)
 
 runningGame = True
 create_bullets(bullets)
@@ -172,6 +177,14 @@ while runningGame:
 
     for i in range(len(bullets)):
         screen.blit(bullets[i]._image, bullets[i]._rect)
+
+    draw_enemies()
+    for i in range(len(enemies)):
+        if enemies[i].check():
+            update_enemy(i)
+
+    for i in range(len(enemies)):
+        screen.blit(enemies[i]._image, enemies[i]._rect)
 
     pygame.display.update()
     clock.tick(60)
