@@ -17,6 +17,7 @@ clock = pygame.time.Clock()
 x = 75
 bullets = []
 enemies = []
+explosionFrames = []
 bulletIndex = -1
 magIndex = 5
 
@@ -34,6 +35,20 @@ dew_hitbox = dew.get_rect()
 dorito = pygame.image.load("dorito.png").convert_alpha()
 dor = pygame.transform.scale(dorito, (50, 50))
 dorito_hitbox = dor.get_rect()
+
+# Explosion
+for i in range(1, 16):
+    loadedFrame = pygame.image.load("explosion_gif/explosion_frame"+str(i)+".gif").convert_alpha()
+    scaledFrame = pygame.transform.scale(loadedFrame, (48, 48))
+    explosionFrame = scaledFrame.get_rect()
+    explosionFrame.x = 1
+    explosionFrame.y = -50
+    explosionFrames.append(explosionFrame)
+
+def explosion(x, y):
+    for i in range(1, 16):
+        screen.fill((0, 0, 0))
+        screen.blit(explosionFrames[i], (x, y))
 
 # Player Functions
 def draw_player():
@@ -79,7 +94,7 @@ class Bullet:
 
 def create_bullets(bullets):
     for i in range(1, 6):
-        new_bullet = Bullet(name = "bullet_" + str(i), x = 1, y = -50, image = dew.copy())
+        new_bullet = Bullet(name = "bullet_" + str(i), x = 1, y = -150, image = dew.copy())
         bullets.append(new_bullet)
     print("Magazine: 5/5 bullets")
 
@@ -89,12 +104,12 @@ def draw_bullet(x, bullets, bulletIndex, magIndex):
         bullets[bulletIndex].topleft = (bullets[bulletIndex].get_x(), bullets[bulletIndex].get_y())
         print("Magazine: "+str(magIndex)+"/5 bullets")
 
-        if magIndex >= 0 and bullets[bulletIndex].get_y() <= -50:
+        if magIndex >= 0 and bullets[bulletIndex].get_y() <= -150:
             bullets[bulletIndex].y(610)
 
 def update_bullet(i):
     bullets[i]._rect.y = bullets[i].get_y()
-    if bullets[i].get_y() > -50:
+    if bullets[i].get_y() > -150:
         bullets[i].y(bullets[i].get_y() - 15)
 
 # Enemy Class and Functions
@@ -138,6 +153,17 @@ def update_enemy(i):
     enemies[i]._rect.y = enemies[i].get_y()
     if enemies[i].get_y() < 720:
         enemies[i].y(enemies[i].get_y() + 1.5)
+
+# Collision
+def checkCollision():
+    i = 0
+    while i < 4:
+        collidedIndex = bullets[i]._rect.collidelist(enemies)
+        if collidedIndex != -1:
+            enemies[collidedIndex].y(800)
+            bullets[i].y(-150)
+            explosion(enemies[collidedIndex].get_x(), enemies[collidedIndex].get_y())
+        i += 1
 
 runningGame = True
 create_bullets(bullets)
