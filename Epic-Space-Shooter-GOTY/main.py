@@ -2,6 +2,7 @@ import pygame
 import os
 import sys
 import random
+import gif_pygame
 os.environ['SDL_VIDEO_WINDOW_POS'] = "%d,%d" % (0,0)
 
 pygame.init()
@@ -17,9 +18,9 @@ clock = pygame.time.Clock()
 x = 75
 bullets = []
 enemies = []
-explosionFrames = []
 bulletIndex = -1
 magIndex = 5
+playerHealth = 100
 
 # Text
 arial = pygame.font.SysFont("Arial", 30)
@@ -37,18 +38,7 @@ dor = pygame.transform.scale(dorito, (50, 50))
 dorito_hitbox = dor.get_rect()
 
 # Explosion
-for i in range(1, 16):
-    loadedFrame = pygame.image.load("explosion_gif/explosion_frame"+str(i)+".gif").convert_alpha()
-    scaledFrame = pygame.transform.scale(loadedFrame, (48, 48))
-    # explosionFrame = scaledFrame.get_rect()
-    # explosionFrame.x = 1
-    # explosionFrame.y = -50
-    explosionFrames.append(scaledFrame)
-
-def explosion(x, y):
-    for frame in explosionFrames:
-        screen.fill((0, 0, 0))
-        screen.blit(frame, (x, y))
+explosion = gif_pygame.load("Explosion.gif", loops = 1)
 
 # Player Functions
 def draw_player():
@@ -155,14 +145,15 @@ def update_enemy(i):
         enemies[i].y(enemies[i].get_y() + 1.5)
 
 # Collision
-def checkCollision():
+def checkEnemyCollision():
     for bullet in bullets:
         for enemy in enemies:
             collidedIndex = bullet._rect.colliderect(enemy._rect)
             if collidedIndex:
                 enemy.y(800)
                 bullet.y(-150)
-                explosion(enemy.get_x(), enemy.get_y())
+                return enemy.get_x(), enemy.get_y(), True
+    return 0, 0, False
 
 runningGame = True
 create_bullets(bullets)
@@ -215,7 +206,11 @@ while runningGame:
     for i in range(len(enemies)):
         screen.blit(enemies[i]._image, enemies[i]._rect)
 
-    checkCollision()
+    explodeX, explodeY, boom = checkEnemyCollision()
+    if boom:
+        screen.blit(explosion.blit_ready(), (100, 100))
+        if explosion.frame == len(explosion.get_surfaces()) - 1:
+            boom = False
 
     pygame.display.update()
     clock.tick(60)
