@@ -40,15 +40,15 @@ dorito_hitbox = dor.get_rect()
 for i in range(1, 16):
     loadedFrame = pygame.image.load("explosion_gif/explosion_frame"+str(i)+".gif").convert_alpha()
     scaledFrame = pygame.transform.scale(loadedFrame, (48, 48))
-    explosionFrame = scaledFrame.get_rect()
-    explosionFrame.x = 1
-    explosionFrame.y = -50
-    explosionFrames.append(explosionFrame)
+    # explosionFrame = scaledFrame.get_rect()
+    # explosionFrame.x = 1
+    # explosionFrame.y = -50
+    explosionFrames.append(scaledFrame)
 
 def explosion(x, y):
-    for i in range(1, 16):
+    for frame in explosionFrames:
         screen.fill((0, 0, 0))
-        screen.blit(explosionFrames[i], (x, y))
+        screen.blit(frame, (x, y))
 
 # Player Functions
 def draw_player():
@@ -156,14 +156,13 @@ def update_enemy(i):
 
 # Collision
 def checkCollision():
-    i = 0
-    while i < 4:
-        collidedIndex = bullets[i]._rect.collidelist(enemies)
-        if collidedIndex != -1:
-            enemies[collidedIndex].y(800)
-            bullets[i].y(-150)
-            explosion(enemies[collidedIndex].get_x(), enemies[collidedIndex].get_y())
-        i += 1
+    for bullet in bullets:
+        for enemy in enemies:
+            collidedIndex = bullet._rect.colliderect(enemy._rect)
+            if collidedIndex:
+                enemy.y(800)
+                bullet.y(-150)
+                explosion(enemy.get_x(), enemy.get_y())
 
 runningGame = True
 create_bullets(bullets)
@@ -215,6 +214,8 @@ while runningGame:
 
     for i in range(len(enemies)):
         screen.blit(enemies[i]._image, enemies[i]._rect)
+
+    checkCollision()
 
     pygame.display.update()
     clock.tick(60)
