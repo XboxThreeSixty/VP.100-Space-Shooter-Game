@@ -21,11 +21,14 @@ enemies = []
 bulletIndex = -1
 magIndex = 5
 playerHealth = 100
+playerScore = 0
 
 # Text
 arial = pygame.font.SysFont("Arial", 30)
-title = arial.render("placeholder text", False, (0, 0, 0))
-# screen.blit(title, (0, 0)) prints the text onto the screen; the 2 numbers are x and y values. This will be used for a future title screen.
+title = arial.render("placeholder text (press r to restart)", False, (0, 0, 0))
+ammo = arial.render("Ammo: 5/5", False, (255, 255, 255))
+health = arial.render("Health: 100%", False, (255, 255, 255))
+score = arial.render("Score: 0", False, (255, 255, 255))
 
 # Bullet
 mtndew = pygame.image.load("mountaindew.png").convert_alpha()
@@ -39,6 +42,22 @@ dorito_hitbox = dor.get_rect()
 
 # Explosion
 explosion = gif_pygame.load("Explosion.gif", loops = 1)
+s1 = pygame.Surface((48, 48))
+s2 = pygame.Surface((48, 48))
+s3 = pygame.Surface((48, 48))
+s4 = pygame.Surface((48, 48))
+s5 = pygame.Surface((48, 48))
+s6 = pygame.Surface((48, 48))
+s7 = pygame.Surface((48, 48))
+s8 = pygame.Surface((48, 48))
+s9 = pygame.Surface((48, 48))
+s10 = pygame.Surface((48, 48))
+s11 = pygame.Surface((48, 48))
+s12 = pygame.Surface((48, 48))
+s13 = pygame.Surface((48, 48))
+s14 = pygame.Surface((48, 48))
+s15 = pygame.Surface((48, 48))
+explosion_surfs = gif_pygame.GIFPygame([[s1, 0.1], [s2, 0.1], [s3, 0.1], [s4, 0.1], [s5, 0.1], [s6, 0.1], [s7, 0.1], [s8, 0.1], [s9, 0.1], [s10, 0.1], [s11, 0.1], [s12, 0.1], [s13, 0.1], [s14, 0.1], [s15, 0.1]])
 
 # Player Functions
 placeholderTexture = pygame.image.load("placeholder.png")
@@ -53,12 +72,12 @@ def move_player(direction):
     global x
     if direction == "left":
         if x > 0:
-            x -= 5
+            x -= 8
         else:
             x -= 0
     elif direction == "right":
         if x < 1230:
-            x += 5
+            x += 8
         else: 
             x += 0
 
@@ -90,13 +109,11 @@ def create_bullets(bullets):
     for i in range(1, 6):
         new_bullet = Bullet(name = "bullet_" + str(i), x = 1, y = -150, image = dew.copy())
         bullets.append(new_bullet)
-    print("Magazine: 5/5 bullets")
 
 def draw_bullet(x, bullets, bulletIndex, magIndex):
     if magIndex >= 0:
         bullets[bulletIndex]._rect.x = x
         bullets[bulletIndex].topleft = (bullets[bulletIndex].get_x(), bullets[bulletIndex].get_y())
-        print("Magazine: "+str(magIndex)+"/5 bullets")
 
         if magIndex >= 0 and bullets[bulletIndex].get_y() <= -150:
             bullets[bulletIndex].y(610)
@@ -149,16 +166,16 @@ def update_enemy(i):
         enemies[i].y(enemies[i].get_y() + 1.5)
 
 # Collision
-def checkEnemyCollision(explosion):
+def checkEnemyCollision(playerScore):
     for bullet in bullets:
         for enemy in enemies:
             collidedIndex = bullet._rect.colliderect(enemy._rect)
             if collidedIndex:
-                explosion.render(screen, (enemy.get_x(), enemy.get_x()))
+                screen.blit(explosion_surfs.blit_ready(), (enemy.get_x(), enemy.get_y()))
                 enemy.y(800)
                 bullet.y(-150)
-                return enemy.get_x(), enemy.get_y(), True
-    return 0, 0, False
+                playerScore += 10
+    return playerScore
 
 def checkPlayerCollision(playerHealth):
     for enemy in enemies:
@@ -166,14 +183,11 @@ def checkPlayerCollision(playerHealth):
         if collidedIndex:
             enemy.y(800)
             playerHealth -= 34
-            if playerHealth <= 0:
-                pass
-            else:
-                print("\nA dorito hit you!! You are now at "+str(playerHealth)+" health!!")
             return playerHealth
     return playerHealth
 
 runningGame = True
+gameOver = False
 create_bullets(bullets)
 create_enemies(enemies)
 
@@ -192,11 +206,13 @@ while runningGame:
                     bulletIndex = 0
                 
                 magIndex -= 1
+                if magIndex >= 0:
+                    ammo = arial.render("Ammo: "+str(magIndex)+"/5", False, (255, 255, 255))
                 draw_bullet(x, bullets, bulletIndex, magIndex)
             if event.key == pygame.K_r:
                 if magIndex != 5:
                     magIndex = 5
-                    print("\nMagazine: 5/5 bullets")
+                    ammo = arial.render("Ammo: 5/5", False, (255, 255, 255))
 
     pressed = pygame.key.get_pressed()
     if pressed[pygame.K_a]:
@@ -207,9 +223,10 @@ while runningGame:
     draw_player()
     screen.blit(scaledPlaceholder, placeholder)
     playerHealth = checkPlayerCollision(playerHealth)
+    health = arial.render("Health: "+str(playerHealth)+"%", False, (255, 255, 255))
     if playerHealth <= 0:
         runningGame = False
-        print("\nThe doritos killed you...rest in pepperonis ;(")
+        gameOver = True
 
     i = 0
     for i in range(len(bullets)):
@@ -230,7 +247,13 @@ while runningGame:
     for i in range(len(enemies)):
         screen.blit(enemies[i]._image, enemies[i]._rect)
 
-    checkEnemyCollision(explosion)
+    playerScore = checkEnemyCollision(playerScore)
+    score = arial.render("Score: "+str(playerScore)+"", False, (255, 255, 255))
+
+    screen.blit(ammo, (1, 1))
+    screen.blit(health, (1, 25))
+    screen.blit(score, (1, 50))
+
     # explodeX, explodeY, boom = checkEnemyCollision(explosion)
     # if boom:
     #     screen.blit(explosion.blit_ready(), (explodeX, explodeY))
@@ -240,5 +263,19 @@ while runningGame:
     pygame.display.update()
     clock.tick(60)
 
-pygame.quit()
-quit()
+while gameOver:
+    for event in pygame.event.get():
+        if event.type == pygame.QUIT:
+            gameOver = False
+        elif event.type == pygame.KEYDOWN:
+            if event.key == pygame.K_r:
+                runningGame = True
+                gameOver = False
+
+    screen.fill((255, 255, 255))
+    screen.blit(title, (550, 300))
+    pygame.display.update()
+
+if runningGame == False and gameOver == False:
+    pygame.quit()
+    quit()
