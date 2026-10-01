@@ -41,9 +41,13 @@ dorito_hitbox = dor.get_rect()
 explosion = gif_pygame.load("Explosion.gif", loops = 1)
 
 # Player Functions
+placeholderTexture = pygame.image.load("placeholder.png")
+scaledPlaceholder = pygame.transform.scale(placeholderTexture, (50, 20))
+placeholder = scaledPlaceholder.get_rect()
+
 def draw_player():
     screen.fill((0, 0, 0))
-    pygame.draw.rect(screen, (255, 0, 0), [x, 670, 50, 20], 0)
+    placeholder.topleft = (x, 670)
 
 def move_player(direction):
     global x
@@ -145,15 +149,29 @@ def update_enemy(i):
         enemies[i].y(enemies[i].get_y() + 1.5)
 
 # Collision
-def checkEnemyCollision():
+def checkEnemyCollision(explosion):
     for bullet in bullets:
         for enemy in enemies:
             collidedIndex = bullet._rect.colliderect(enemy._rect)
             if collidedIndex:
+                explosion.render(screen, (enemy.get_x(), enemy.get_x()))
                 enemy.y(800)
                 bullet.y(-150)
                 return enemy.get_x(), enemy.get_y(), True
     return 0, 0, False
+
+def checkPlayerCollision(playerHealth):
+    for enemy in enemies:
+        collidedIndex = placeholder.colliderect(enemy._rect)
+        if collidedIndex:
+            enemy.y(800)
+            playerHealth -= 34
+            if playerHealth <= 0:
+                pass
+            else:
+                print("\nA dorito hit you!! You are now at "+str(playerHealth)+" health!!")
+            return playerHealth
+    return playerHealth
 
 runningGame = True
 create_bullets(bullets)
@@ -187,6 +205,12 @@ while runningGame:
         move_player("right")
 
     draw_player()
+    screen.blit(scaledPlaceholder, placeholder)
+    playerHealth = checkPlayerCollision(playerHealth)
+    if playerHealth <= 0:
+        runningGame = False
+        print("\nThe doritos killed you...rest in pepperonis ;(")
+
     i = 0
     for i in range(len(bullets)):
         if bullets[i].check:
@@ -206,11 +230,12 @@ while runningGame:
     for i in range(len(enemies)):
         screen.blit(enemies[i]._image, enemies[i]._rect)
 
-    explodeX, explodeY, boom = checkEnemyCollision()
-    if boom:
-        screen.blit(explosion.blit_ready(), (100, 100))
-        if explosion.frame == len(explosion.get_surfaces()) - 1:
-            boom = False
+    checkEnemyCollision(explosion)
+    # explodeX, explodeY, boom = checkEnemyCollision(explosion)
+    # if boom:
+    #     screen.blit(explosion.blit_ready(), (explodeX, explodeY))
+    #     if explosion.frame == len(explosion.get_surfaces()) - 1:
+    #         boom = False
 
     pygame.display.update()
     clock.tick(60)
