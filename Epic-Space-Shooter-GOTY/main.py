@@ -24,11 +24,11 @@ playerHealth = 100
 playerScore = 0
 
 # Text
-arial = pygame.font.SysFont("Arial", 30)
-title = arial.render("placeholder text (press r to restart)", False, (0, 0, 0))
-ammo = arial.render("Ammo: 5/5", False, (255, 255, 255))
-health = arial.render("Health: 100%", False, (255, 255, 255))
-score = arial.render("Score: 0", False, (255, 255, 255))
+retro = pygame.font.Font("Retro Gaming.ttf", 30)
+title = retro.render("placeholder text (press r to restart)", False, (0, 0, 0))
+ammo = retro.render("Ammo: 5/5", False, (255, 255, 255))
+health = retro.render("Health: 100%", False, (255, 255, 255))
+score = retro.render("Score: 0", False, (255, 255, 255))
 
 # Bullet
 mtndew = pygame.image.load("mountaindew.png").convert_alpha()
@@ -186,6 +186,7 @@ def checkPlayerCollision(playerHealth):
             return playerHealth
     return playerHealth
 
+runningLoop = True
 runningGame = True
 gameOver = False
 create_bullets(bullets)
@@ -194,88 +195,87 @@ create_enemies(enemies)
 pygame.key.set_repeat(400, 400)
 
 # Game Loop
-while runningGame:
-    for event in pygame.event.get():
-        if event.type == pygame.QUIT:
+while runningLoop:
+    while runningGame:
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                runningGame = False
+                runningLoop = False
+            elif event.type == pygame.KEYDOWN:
+                if event.key == pygame.K_SPACE:
+                    if bulletIndex < 4:
+                        bulletIndex += 1
+                    elif bulletIndex == 4:
+                        bulletIndex = 0
+                    
+                    magIndex -= 1
+                    if magIndex >= 0:
+                        ammo = retro.render("Ammo: "+str(magIndex)+"/5", False, (255, 255, 255))
+                    draw_bullet(x, bullets, bulletIndex, magIndex)
+                if event.key == pygame.K_r:
+                    if magIndex != 5:
+                        magIndex = 5
+                        ammo = retro.render("Ammo: 5/5", False, (255, 255, 255))
+
+        pressed = pygame.key.get_pressed()
+        if pressed[pygame.K_a]:
+            move_player("left")
+        if pressed[pygame.K_d]:
+            move_player("right")
+
+        draw_player()
+        screen.blit(scaledPlaceholder, placeholder)
+        playerHealth = checkPlayerCollision(playerHealth)
+        health = retro.render("Health: "+str(playerHealth)+"%", False, (255, 255, 255))
+        if playerHealth <= 0:
             runningGame = False
-        elif event.type == pygame.KEYDOWN:
-            if event.key == pygame.K_SPACE:
-                if bulletIndex < 4:
-                    bulletIndex += 1
-                elif bulletIndex == 4:
-                    bulletIndex = 0
-                
-                magIndex -= 1
-                if magIndex >= 0:
-                    ammo = arial.render("Ammo: "+str(magIndex)+"/5", False, (255, 255, 255))
-                draw_bullet(x, bullets, bulletIndex, magIndex)
-            if event.key == pygame.K_r:
-                if magIndex != 5:
-                    magIndex = 5
-                    ammo = arial.render("Ammo: 5/5", False, (255, 255, 255))
+            gameOver = True
 
-    pressed = pygame.key.get_pressed()
-    if pressed[pygame.K_a]:
-        move_player("left")
-    if pressed[pygame.K_d]:
-        move_player("right")
+        i = 0
+        for i in range(len(bullets)):
+            if bullets[i].check:
+                update_bullet(i)
 
-    draw_player()
-    screen.blit(scaledPlaceholder, placeholder)
-    playerHealth = checkPlayerCollision(playerHealth)
-    health = arial.render("Health: "+str(playerHealth)+"%", False, (255, 255, 255))
-    if playerHealth <= 0:
-        runningGame = False
-        gameOver = True
+        for i in range(len(bullets)):
+            screen.blit(bullets[i]._image, bullets[i]._rect)
 
-    i = 0
-    for i in range(len(bullets)):
-        if bullets[i].check:
-            update_bullet(i)
+        rand = random.randrange(0, 10)
+        if rand == 1: 
+            draw_enemies()
 
-    for i in range(len(bullets)):
-        screen.blit(bullets[i]._image, bullets[i]._rect)
+        for i in range(len(enemies)):
+            if enemies[i].check():
+                update_enemy(i)
 
-    rand = random.randrange(0, 10)
-    if rand == 1: 
-        draw_enemies()
+        for i in range(len(enemies)):
+            screen.blit(enemies[i]._image, enemies[i]._rect)
 
-    for i in range(len(enemies)):
-        if enemies[i].check():
-            update_enemy(i)
+        playerScore = checkEnemyCollision(playerScore)
+        score = retro.render("Score: "+str(playerScore)+"", False, (255, 255, 255))
 
-    for i in range(len(enemies)):
-        screen.blit(enemies[i]._image, enemies[i]._rect)
+        screen.blit(ammo, (1, 1))
+        screen.blit(health, (1, 25))
+        screen.blit(score, (1, 50))
 
-    playerScore = checkEnemyCollision(playerScore)
-    score = arial.render("Score: "+str(playerScore)+"", False, (255, 255, 255))
-
-    screen.blit(ammo, (1, 1))
-    screen.blit(health, (1, 25))
-    screen.blit(score, (1, 50))
-
-    # explodeX, explodeY, boom = checkEnemyCollision(explosion)
-    # if boom:
-    #     screen.blit(explosion.blit_ready(), (explodeX, explodeY))
-    #     if explosion.frame == len(explosion.get_surfaces()) - 1:
-    #         boom = False
-
-    pygame.display.update()
-    clock.tick(60)
-
-while gameOver:
-    for event in pygame.event.get():
-        if event.type == pygame.QUIT:
-            gameOver = False
-        elif event.type == pygame.KEYDOWN:
-            if event.key == pygame.K_r:
-                runningGame = True
+        pygame.display.update()
+        clock.tick(60)
+    while gameOver:
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
                 gameOver = False
+                runninLoop = False
+            elif event.type == pygame.KEYDOWN:
+                if event.key == pygame.K_r:
+                    playerHealth = 100
+                    playerScore = 0
+                    magIndex = 5
+                    gameOver = False
+                    runningGame = True
+                    break
 
-    screen.fill((255, 255, 255))
-    screen.blit(title, (550, 300))
-    pygame.display.update()
+        screen.fill((255, 255, 255))
+        screen.blit(title, (550, 300))
+        pygame.display.update()
 
-if runningGame == False and gameOver == False:
-    pygame.quit()
-    quit()
+pygame.quit()
+quit()
