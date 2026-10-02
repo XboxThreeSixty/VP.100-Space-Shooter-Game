@@ -22,13 +22,15 @@ bulletIndex = -1
 magIndex = 5
 playerHealth = 100
 playerScore = 0
+doritoBreaches = 0
 
 # Text
-retro = pygame.font.Font("Retro Gaming.ttf", 30)
-title = retro.render("placeholder text (press r to restart)", False, (0, 0, 0))
+retro = pygame.font.Font("Retro Gaming.ttf", 25)
+gameOverText = retro.render("placeholder text (press r to restart)", False, (0, 0, 0))
 ammo = retro.render("Ammo: 5/5", False, (255, 255, 255))
-health = retro.render("Health: 100%", False, (255, 255, 255))
+health = retro.render("Health: 100%", False, (0, 255, 0))
 score = retro.render("Score: 0", False, (255, 255, 255))
+breaches = retro.render("Doritos breached: 0", False, (0, 255, 0))
 
 # Bullet
 mtndew = pygame.image.load("mountaindew.png").convert_alpha()
@@ -217,6 +219,7 @@ while runningLoop:
                         magIndex = 5
                         ammo = retro.render("Ammo: 5/5", False, (255, 255, 255))
 
+        # player movement and drawing
         pressed = pygame.key.get_pressed()
         if pressed[pygame.K_a]:
             move_player("left")
@@ -225,12 +228,37 @@ while runningLoop:
 
         draw_player()
         screen.blit(scaledPlaceholder, placeholder)
+
+        # updating HUD values
         playerHealth = checkPlayerCollision(playerHealth)
-        health = retro.render("Health: "+str(playerHealth)+"%", False, (255, 255, 255))
+        if playerHealth == 100:
+            health = retro.render("Health: "+str(playerHealth)+"%", False, (0, 255, 0))
+        elif playerHealth == 66:
+            health = retro.render("Health: "+str(playerHealth)+"%", False, (255, 255, 0))
+        else:
+            health = retro.render("Health: "+str(playerHealth)+"%", False, (255, 0, 0))
+
+        playerScore = checkEnemyCollision(playerScore)
+        score = retro.render("Score: "+str(playerScore)+"", False, (255, 255, 255))
+
+        if doritoBreaches <= 2:
+            breaches = retro.render("Doritos breached: "+str(doritoBreaches)+"", False, (0, 255, 0))
+        elif doritoBreaches <= 4:
+            breaches = retro.render("Doritos breached: "+str(doritoBreaches)+"", False, (255, 255, 0))
+        elif doritoBreaches <= 6:
+            breaches = retro.render("Doritos breached: "+str(doritoBreaches)+"", False, (255, 165, 0))
+        else:
+            breaches = retro.render("Doritos breached: "+str(doritoBreaches)+"", False, (255, 0, 0))
+
+        # Lose conditions
         if playerHealth <= 0:
             runningGame = False
             gameOver = True
+        if doritoBreaches >= 8:
+            runningGame = False
+            gameOver = True
 
+        # updating and drawing the bullets
         i = 0
         for i in range(len(bullets)):
             if bullets[i].check:
@@ -239,6 +267,7 @@ while runningLoop:
         for i in range(len(bullets)):
             screen.blit(bullets[i]._image, bullets[i]._rect)
 
+        # updating and drawing the enemies
         rand = random.randrange(0, 10)
         if rand == 1: 
             draw_enemies()
@@ -250,12 +279,17 @@ while runningLoop:
         for i in range(len(enemies)):
             screen.blit(enemies[i]._image, enemies[i]._rect)
 
-        playerScore = checkEnemyCollision(playerScore)
-        score = retro.render("Score: "+str(playerScore)+"", False, (255, 255, 255))
+        for i in range(len(enemies)):
+            if enemies[i].get_y() >= 720 and enemies[i].get_y() < 800:
+                doritoBreaches += 1
+                enemies[i].y(-50)
+                enemies[i].x(random.randrange(1, 1231))
 
+        # drawing the HUD
         screen.blit(ammo, (1, 1))
         screen.blit(health, (1, 25))
         screen.blit(score, (1, 50))
+        screen.blit(breaches, (1, 75))
 
         pygame.display.update()
         clock.tick(60)
@@ -263,18 +297,18 @@ while runningLoop:
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 gameOver = False
-                runninLoop = False
+                runningLoop = False
             elif event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_r:
                     playerHealth = 100
                     playerScore = 0
                     magIndex = 5
+                    doritoBreaches = 0
                     gameOver = False
                     runningGame = True
-                    break
 
         screen.fill((255, 255, 255))
-        screen.blit(title, (550, 300))
+        screen.blit(gameOverText, (550, 300))
         pygame.display.update()
 
 pygame.quit()
