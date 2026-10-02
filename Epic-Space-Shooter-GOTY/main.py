@@ -1,6 +1,5 @@
 import pygame
 import os
-import sys
 import random
 import gif_pygame
 os.environ['SDL_VIDEO_WINDOW_POS'] = "%d,%d" % (0,0)
@@ -26,11 +25,19 @@ doritoBreaches = 0
 
 # Text
 retro = pygame.font.Font("Retro Gaming.ttf", 25)
-gameOverText = retro.render("placeholder text (press r to restart)", False, (0, 0, 0))
+bigretro = pygame.font.Font("Retro Gaming.ttf", 30)
+
+title = bigretro.render("EPIC SPACE SHOOTER", False, (0, 255, 0))
+subtitle = retro.render("Game of the Year Edition", False, (0, 255, 0))
+story = retro.render("You were hired as a bodyguard to protect the venue that Major League Gaming is hosting their Halo 3 tournament in\nbut while on shift, Weegee sent his army of doritos to overtake the venue and destroy Major League Gaming!!! aaa!!!!\nYou must protect the venue from the attacking dorito army at ALL COSTS!!! good luck soldier", False, (0, 0, 0))
+titleControls = retro.render("Press Enter to make your final stand against teh doritos", False, (0, 0, 0))
+
 ammo = retro.render("Ammo: 5/5", False, (255, 255, 255))
 health = retro.render("Health: 100%", False, (0, 255, 0))
 score = retro.render("Score: 0", False, (255, 255, 255))
 breaches = retro.render("Doritos breached: 0", False, (0, 255, 0))
+
+gameOverText = retro.render("Game Over (press r to restart)", False, (0, 0, 0))
 
 # Bullet
 mtndew = pygame.image.load("mountaindew.png").convert_alpha()
@@ -43,6 +50,7 @@ dor = pygame.transform.scale(dorito, (50, 50))
 dorito_hitbox = dor.get_rect()
 
 # Explosion
+# all code under the explosion category is ugly and for something that didn't really work, keeping it incase I want to try again
 explosion = gif_pygame.load("Explosion.gif", loops = 1)
 s1 = pygame.Surface((48, 48))
 s2 = pygame.Surface((48, 48))
@@ -173,7 +181,8 @@ def checkEnemyCollision(playerScore):
         for enemy in enemies:
             collidedIndex = bullet._rect.colliderect(enemy._rect)
             if collidedIndex:
-                screen.blit(explosion_surfs.blit_ready(), (enemy.get_x(), enemy.get_y()))
+                # screen.blit(explosion_surfs.blit_ready(), (enemy.get_x(), enemy.get_y()))
+                # I have this commented out because it is code meant for the explosion gif that didn't work out but I wanna keep it incase in the future I want to give another try at using this
                 enemy.y(800)
                 bullet.y(-150)
                 playerScore += 10
@@ -189,8 +198,10 @@ def checkPlayerCollision(playerHealth):
     return playerHealth
 
 runningLoop = True
+startMenu = False
 runningGame = True
 gameOver = False
+
 create_bullets(bullets)
 create_enemies(enemies)
 
@@ -198,6 +209,18 @@ pygame.key.set_repeat(400, 400)
 
 # Game Loop
 while runningLoop:
+    while startMenu:
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                startMenu = False
+                runningLoop = False
+            elif event.type == pygame.KEYDOWN:
+                if event.key == pygame.K_RETURN:
+                    startMenu = False
+                    runningGame = True
+
+        screen.fill((255, 255, 255))
+        pygame.display.update()
     while runningGame:
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
@@ -303,12 +326,15 @@ while runningLoop:
                     playerHealth = 100
                     playerScore = 0
                     magIndex = 5
+                    ammo = retro.render("Ammo: 5/5", False, (255, 255, 255))
                     doritoBreaches = 0
+                    enemies.clear()
+                    create_enemies(enemies)
                     gameOver = False
                     runningGame = True
 
-        screen.fill((255, 255, 255))
-        screen.blit(gameOverText, (550, 300))
+        screen.fill((255, 0, 0))
+        screen.blit(gameOverText, (460, 300))
         pygame.display.update()
 
 pygame.quit()
