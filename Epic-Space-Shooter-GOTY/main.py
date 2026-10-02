@@ -29,7 +29,7 @@ bigretro = pygame.font.Font("Retro Gaming.ttf", 30)
 
 title = bigretro.render("EPIC SPACE SHOOTER", False, (0, 255, 0))
 subtitle = retro.render("Game of the Year Edition", False, (0, 255, 0))
-story = retro.render("You were hired as a bodyguard to protect the venue that Major League Gaming is hosting their Halo 3 tournament in\nbut while on shift, Weegee sent his army of doritos to overtake the venue and destroy Major League Gaming!!! aaa!!!!\nYou must protect the venue from the attacking dorito army at ALL COSTS!!! good luck soldier", False, (0, 0, 0))
+story = retro.render("You were hired as a bodyguard to protect the venue that Major League Gaming is\n hosting their Halo 3 tournament in but while on shift, Weegee sent his army of\n doritos to overtake the venue and destroy Major League Gaming!!! aaa!!!!\nYou must protect the venue from the attacking dorito army at ALL COSTS!!!", False, (0, 0, 0))
 titleControls = retro.render("Press Enter to make your final stand against teh doritos", False, (0, 0, 0))
 
 ammo = retro.render("Ammo: 5/5", False, (255, 255, 255))
@@ -38,6 +38,10 @@ score = retro.render("Score: 0", False, (255, 255, 255))
 breaches = retro.render("Doritos breached: 0", False, (0, 255, 0))
 
 gameOverText = retro.render("Game Over (press r to restart)", False, (0, 0, 0))
+
+weegee = pygame.image.load("weegee.png").convert_alpha()
+weegeeScaled = pygame.transform.scale(weegee, (50, 100))
+weegeeRect = weegeeScaled.get_rect()
 
 # Bullet
 mtndew = pygame.image.load("mountaindew.png").convert_alpha()
@@ -198,8 +202,8 @@ def checkPlayerCollision(playerHealth):
     return playerHealth
 
 runningLoop = True
-startMenu = False
-runningGame = True
+startMenu = True
+runningGame = False
 gameOver = False
 
 create_bullets(bullets)
@@ -220,6 +224,12 @@ while runningLoop:
                     runningGame = True
 
         screen.fill((255, 255, 255))
+        screen.blit(title, (425, 50))  
+        screen.blit(subtitle, (425, 81)) 
+        screen.blit(story, (20, 155)) 
+        screen.blit(titleControls, (200, 400))
+        screen.blit(weegeeScaled, weegeeRect)
+        weegeeRect.topleft = (70, 80)
         pygame.display.update()
     while runningGame:
         for event in pygame.event.get():
