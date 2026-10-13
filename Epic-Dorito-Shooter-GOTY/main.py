@@ -190,6 +190,7 @@ def checkPlayerCollision(playerHealth):
             return playerHealth
     return playerHealth
 
+# Loop to rainbowify text
 def rainbowLoop(R, G, B, increment):
     if R == 250 and G < 250 and B == 0:
         G += increment
