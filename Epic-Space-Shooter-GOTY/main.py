@@ -10,7 +10,7 @@ screenWidth = 1280
 screenHeight = 720
 
 screen = pygame.display.set_mode((screenWidth, screenHeight))
-pygame.display.set_caption("Epic Space Shooter: Game of the Year Edition")
+pygame.display.set_caption("Epic Dorito Shooter: Game of the Year Edition")
 screen.fill((0, 0, 0))
 clock = pygame.time.Clock()
 
@@ -23,22 +23,31 @@ playerHealth = 100
 playerScore = 0
 doritoBreaches = 0
 
+R = 250
+G = 0
+B = 0
+
 # Text
 retro = pygame.font.Font("Retro Gaming.ttf", 25)
-bigretro = pygame.font.Font("Retro Gaming.ttf", 30)
+bigretro = pygame.font.Font("Retro Gaming.ttf", 50)
+biggerretro = pygame.font.Font("Retro Gaming.ttf", 100)
 
-title = bigretro.render("EPIC SPACE SHOOTER", False, (0, 255, 0))
-subtitle = retro.render("Game of the Year Edition", False, (0, 255, 0))
+title = bigretro.render("EPIC DORITO SHOOTER", False, (255, 0, 0))
+subtitle = retro.render("Game of the Year Edition", False, (255, 0, 0))
 story = retro.render("You were hired as a bodyguard to protect the venue that Major League Gaming is\n hosting their Halo 3 tournament in but while on shift, Weegee sent his army of\n doritos to overtake the venue and destroy Major League Gaming!!! aaa!!!!\nYou must protect the venue from the attacking dorito army at ALL COSTS!!!", False, (0, 0, 0))
 titleControls = retro.render("Press Enter to make your final stand against teh doritos", False, (0, 0, 0))
 
 ammo = retro.render("Ammo: 5/5", False, (255, 255, 255))
 health = retro.render("Health: 100%", False, (0, 255, 0))
-score = retro.render("Score: 0", False, (255, 255, 255))
+score = retro.render("Score: 0", False, (255, 0, 0))
 breaches = retro.render("Doritos breached: 0", False, (0, 255, 0))
 
-gameOverText = retro.render("Game Over (press r to restart)", False, (0, 0, 0))
+gameOverText = biggerretro.render("Game Over", False, (0, 0, 0))
+restartText = retro.render("press r to restart", False, (0, 0, 0))
+breachedEnd = retro.render("Too many doritos breached into the venue", False, (0, 0, 0))
+healthEnd = retro.render("The doritos rekt u m8", False, (0, 0, 0))
 
+# the big l
 weegee = pygame.image.load("weegee.png").convert_alpha()
 weegeeScaled = pygame.transform.scale(weegee, (50, 100))
 weegeeRect = weegeeScaled.get_rect()
@@ -52,26 +61,6 @@ dew_hitbox = dew.get_rect()
 dorito = pygame.image.load("dorito.png").convert_alpha()
 dor = pygame.transform.scale(dorito, (50, 50))
 dorito_hitbox = dor.get_rect()
-
-# Explosion
-# all code under the explosion category is ugly and for something that didn't really work, keeping it incase I want to try again
-explosion = gif_pygame.load("Explosion.gif", loops = 1)
-s1 = pygame.Surface((48, 48))
-s2 = pygame.Surface((48, 48))
-s3 = pygame.Surface((48, 48))
-s4 = pygame.Surface((48, 48))
-s5 = pygame.Surface((48, 48))
-s6 = pygame.Surface((48, 48))
-s7 = pygame.Surface((48, 48))
-s8 = pygame.Surface((48, 48))
-s9 = pygame.Surface((48, 48))
-s10 = pygame.Surface((48, 48))
-s11 = pygame.Surface((48, 48))
-s12 = pygame.Surface((48, 48))
-s13 = pygame.Surface((48, 48))
-s14 = pygame.Surface((48, 48))
-s15 = pygame.Surface((48, 48))
-explosion_surfs = gif_pygame.GIFPygame([[s1, 0.1], [s2, 0.1], [s3, 0.1], [s4, 0.1], [s5, 0.1], [s6, 0.1], [s7, 0.1], [s8, 0.1], [s9, 0.1], [s10, 0.1], [s11, 0.1], [s12, 0.1], [s13, 0.1], [s14, 0.1], [s15, 0.1]])
 
 # Player Functions
 placeholderTexture = pygame.image.load("placeholder.png")
@@ -201,6 +190,39 @@ def checkPlayerCollision(playerHealth):
             return playerHealth
     return playerHealth
 
+def rainbowLoop(R, G, B, increment):
+    if R == 250 and G < 250 and B == 0:
+        G += increment
+
+        if G > 250:
+            G = 250
+    elif R > 0 and G == 250 and B == 0:
+        R -= increment
+
+        if R < 0:
+            R = 0
+    elif R == 0 and G == 250 and B < 250:
+        B += increment
+
+        if B > 250:
+            B = 250
+    elif R == 0 and G > 0 and B == 250:
+        G -= increment
+
+        if G < 0:
+            G = 0
+    elif R < 250 and G == 0 and B == 250:
+        R += increment
+
+        if R > 250:
+            R = 250
+    elif R == 250 and G == 0 and B > 0:
+        B -= increment
+
+        if B < 0:
+            B = 0
+    return R, G, B
+
 runningLoop = True
 startMenu = True
 runningGame = False
@@ -222,14 +244,20 @@ while runningLoop:
                 if event.key == pygame.K_RETURN:
                     startMenu = False
                     runningGame = True
+                    R = 250
+                    G = 0
+                    B = 0
 
+        title = bigretro.render("EPIC DORITO SHOOTER", False, (R, G, B))
+        subtitle = retro.render("Game of the Year Edition", False, (R, G, B))
+        R, G, B = rainbowLoop(R, G, B, 1)
         screen.fill((255, 255, 255))
-        screen.blit(title, (425, 50))  
-        screen.blit(subtitle, (425, 81)) 
+        screen.blit(title, (300, 50))  
+        screen.blit(subtitle, (460, 100)) 
         screen.blit(story, (20, 155)) 
         screen.blit(titleControls, (200, 400))
         screen.blit(weegeeScaled, weegeeRect)
-        weegeeRect.topleft = (70, 80)
+        weegeeRect.topleft = (1050, 40)
         pygame.display.update()
     while runningGame:
         for event in pygame.event.get():
@@ -272,7 +300,8 @@ while runningLoop:
             health = retro.render("Health: "+str(playerHealth)+"%", False, (255, 0, 0))
 
         playerScore = checkEnemyCollision(playerScore)
-        score = retro.render("Score: "+str(playerScore)+"", False, (255, 255, 255))
+        score = retro.render("Score: "+str(playerScore)+"", False, (R, G, B))
+        R, G, B = rainbowLoop(R, G, B, 8)
 
         if doritoBreaches <= 2:
             breaches = retro.render("Doritos breached: "+str(doritoBreaches)+"", False, (0, 255, 0))
@@ -343,8 +372,15 @@ while runningLoop:
                     gameOver = False
                     runningGame = True
 
+        finalScore = retro.render("Final Score: "+str(playerScore)+"", False, (0, 0, 0))
         screen.fill((255, 0, 0))
-        screen.blit(gameOverText, (460, 300))
+        screen.blit(gameOverText, (300, 100))
+        if playerHealth <= 0:
+            screen.blit(healthEnd, (300, 250))
+        else:
+            screen.blit(breachedEnd, (300, 250))
+        screen.blit(finalScore, (460, 300))
+        screen.blit(restartText, (460, 350))
         pygame.display.update()
 
 pygame.quit()
