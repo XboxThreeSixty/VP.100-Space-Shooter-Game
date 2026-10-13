@@ -1,7 +1,9 @@
 import pygame
 import os
 import random
+import sqlite3
 os.environ['SDL_VIDEO_WINDOW_POS'] = "%d,%d" % (0,0)
+connect = sqlite3.connect("database.db")
 
 pygame.init()
 
@@ -21,6 +23,8 @@ magIndex = 5
 playerHealth = 100
 playerScore = 0
 doritoBreaches = 0
+username = ""
+typing = False
 
 R = 250
 G = 0
@@ -358,7 +362,12 @@ while runningLoop:
             if event.type == pygame.QUIT:
                 gameOver = False
                 runningLoop = False
-            elif event.type == pygame.KEYDOWN:
+            elif event.type == pygame.MOUSEBUTTONDOWN:
+                typing = True
+            elif event.type == pygame.KEYDOWN and typing:
+                if event.key == pygame.K_RETURN:
+                    pass
+            elif event.type == pygame.KEYDOWN and not typing:
                 if event.key == pygame.K_r:
                     playerHealth = 100
                     playerScore = 0
@@ -380,6 +389,9 @@ while runningLoop:
         screen.blit(finalScore, (460, 300))
         screen.blit(restartText, (460, 350))
         pygame.display.update()
+
+        # TODO: implement a button that will use connect.execute() to execute a line of SQL code and have it in the game over screen so that players have the choice to submit their scores if they want
+        # https://stackoverflow.com/questions/46390231/how-can-i-create-a-text-input-box-with-pygame this will be helpful
 
 pygame.quit()
 quit()
