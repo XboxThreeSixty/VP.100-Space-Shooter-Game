@@ -1,9 +1,8 @@
 import pygame
 import os
 import random
-import sqlite3
+import requests
 os.environ['SDL_VIDEO_WINDOW_POS'] = "%d,%d" % (0,0)
-connect = sqlite3.connect("database.db")
 
 pygame.init()
 
@@ -25,19 +24,20 @@ playerScore = 0
 doritoBreaches = 0
 username = ""
 typing = False
+hasSubmitted = False
 
 R = 250
 G = 0
 B = 0
 
 # Text
-retro = pygame.font.Font("Retro Gaming.ttf", 25)
-bigretro = pygame.font.Font("Retro Gaming.ttf", 50)
-biggerretro = pygame.font.Font("Retro Gaming.ttf", 100)
+retro = pygame.font.Font("../Retro_Gaming.ttf", 25)
+bigretro = pygame.font.Font("../Retro_Gaming.ttf", 50)
+biggerretro = pygame.font.Font("../Retro_Gaming.ttf", 100)
 
 title = bigretro.render("EPIC DORITO SHOOTER", False, (255, 0, 0))
 subtitle = retro.render("Game of the Year Edition", False, (255, 0, 0))
-story = retro.render("You were hired as a bodyguard to protect the venue that Major League Gaming is\n hosting their Halo 3 tournament in but while on shift, Weegee sent his army of\n doritos to overtake the venue and destroy Major League Gaming!!! aaa!!!!\nYou must protect the venue from the attacking dorito army at ALL COSTS!!!", False, (0, 0, 0))
+story = retro.render("You were hired as a bodyguard to protect the venue that Major League Gaming is\nhosting their Halo 3 tournament in but while on shift, Weegee sent his army of\ndoritos to overtake the venue and destroy Major League Gaming!!! aaa!!!!\nYou must protect the venue from the attacking dorito army at ALL COSTS!!!", False, (0, 0, 0))
 titleControls = retro.render("Press Enter to make your final stand against teh doritos", False, (0, 0, 0))
 
 ammo = retro.render("Ammo: 5/5", False, (255, 255, 255))
@@ -50,25 +50,26 @@ restartText = retro.render("press r to restart", False, (0, 0, 0))
 breachedEnd = retro.render("Too many doritos breached into the venue", False, (0, 0, 0))
 healthEnd = retro.render("The doritos rekt u m8", False, (0, 0, 0))
 submissionText = retro.render("(Optional) Click anywhere to start typing your username, press\nenter to submit it and your score to the leaderboard or esc to stop.", False, (0, 0, 0))
+submitted = retro.render("Submitted!", False, (0, 0, 0))
 nameText = retro.render("", False, (0, 0, 0))
 
 # the big l
-weegee = pygame.image.load("weegee.png").convert_alpha()
+weegee = pygame.image.load("../weegee.png").convert_alpha()
 weegeeScaled = pygame.transform.scale(weegee, (50, 100))
 weegeeRect = weegeeScaled.get_rect()
 
 # Bullet
-mtndew = pygame.image.load("mountaindew.png").convert_alpha()
+mtndew = pygame.image.load("../mountaindew.png").convert_alpha()
 dew = pygame.transform.scale(mtndew, (50, 50))
 dew_hitbox = dew.get_rect()
 
 # Enemy
-dorito = pygame.image.load("dorito.png").convert_alpha()
+dorito = pygame.image.load("../dorito.png").convert_alpha()
 dor = pygame.transform.scale(dorito, (50, 50))
 dorito_hitbox = dor.get_rect()
 
 # Player Functions
-placeholderTexture = pygame.image.load("placeholder.png")
+placeholderTexture = pygame.image.load("../placeholder.png")
 scaledPlaceholder = pygame.transform.scale(placeholderTexture, (50, 20))
 placeholder = scaledPlaceholder.get_rect()
 
@@ -369,6 +370,9 @@ while runningLoop:
             elif event.type == pygame.KEYDOWN and typing:
                 if event.key == pygame.K_RETURN:
                     typing = False
+                    if not hasSubmitted:
+                        pass
+                    hasSubmitted = True
                 if event.key == pygame.K_ESCAPE:
                     typing = False
                 elif event.key == pygame.K_BACKSPACE:
@@ -387,6 +391,7 @@ while runningLoop:
                     create_enemies(enemies)
                     gameOver = False
                     runningGame = True
+                    hasSubmitted = False
 
         finalScore = retro.render("Final Score: "+str(playerScore)+"", False, (0, 0, 0))
         nameText = retro.render(username, False, (0, 0, 0))
@@ -399,10 +404,11 @@ while runningLoop:
         screen.blit(finalScore, (460, 300))
         screen.blit(restartText, (460, 350))
         screen.blit(submissionText, (170, 400))
-        screen.blit(nameText, (460, 475))
+        if hasSubmitted:
+            screen.blit(submitted, (460, 475))
+        else:
+            screen.blit(nameText, (460, 475))
         pygame.display.update()
-
-        # TODO: implement a button that will use connect.execute() to execute a line of SQL code and have it in the game over screen so that players have the choice to submit their scores if they want
 
 pygame.quit()
 quit()
