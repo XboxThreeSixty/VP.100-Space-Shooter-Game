@@ -49,6 +49,8 @@ gameOverText = biggerretro.render("Game Over", False, (0, 0, 0))
 restartText = retro.render("press r to restart", False, (0, 0, 0))
 breachedEnd = retro.render("Too many doritos breached into the venue", False, (0, 0, 0))
 healthEnd = retro.render("The doritos rekt u m8", False, (0, 0, 0))
+submissionText = retro.render("(Optional) Click anywhere to start typing your username, press\nenter to submit it and your score to the leaderboard or esc to stop.", False, (0, 0, 0))
+nameText = retro.render("", False, (0, 0, 0))
 
 # the big l
 weegee = pygame.image.load("weegee.png").convert_alpha()
@@ -226,9 +228,9 @@ def rainbowLoop(R, G, B, increment):
     return R, G, B
 
 runningLoop = True
-startMenu = True
+startMenu = False
 runningGame = False
-gameOver = False
+gameOver = True
 
 create_bullets(bullets)
 create_enemies(enemies)
@@ -366,7 +368,14 @@ while runningLoop:
                 typing = True
             elif event.type == pygame.KEYDOWN and typing:
                 if event.key == pygame.K_RETURN:
-                    pass
+                    typing = False
+                if event.key == pygame.K_ESCAPE:
+                    typing = False
+                elif event.key == pygame.K_BACKSPACE:
+                    username = username[:-1]
+                else:
+                    if len(username) < 21:
+                        username += event.unicode
             elif event.type == pygame.KEYDOWN and not typing:
                 if event.key == pygame.K_r:
                     playerHealth = 100
@@ -380,18 +389,20 @@ while runningLoop:
                     runningGame = True
 
         finalScore = retro.render("Final Score: "+str(playerScore)+"", False, (0, 0, 0))
+        nameText = retro.render(username, False, (0, 0, 0))
         screen.fill((255, 0, 0))
         screen.blit(gameOverText, (300, 100))
         if playerHealth <= 0:
-            screen.blit(healthEnd, (300, 250))
+            screen.blit(healthEnd, (450, 250))
         else:
             screen.blit(breachedEnd, (300, 250))
         screen.blit(finalScore, (460, 300))
         screen.blit(restartText, (460, 350))
+        screen.blit(submissionText, (170, 400))
+        screen.blit(nameText, (460, 475))
         pygame.display.update()
 
         # TODO: implement a button that will use connect.execute() to execute a line of SQL code and have it in the game over screen so that players have the choice to submit their scores if they want
-        # https://stackoverflow.com/questions/46390231/how-can-i-create-a-text-input-box-with-pygame this will be helpful
 
 pygame.quit()
 quit()
