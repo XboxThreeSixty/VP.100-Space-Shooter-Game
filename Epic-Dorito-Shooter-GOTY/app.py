@@ -9,14 +9,11 @@ connect = sqlite3.connect("database.db")
 def index():
     return render_template("index.html")
 
-@app.route("/insert", methods=["GET", "POST"])
-def insert():
+@app.route("/insert/<string:username>/<int:playerScore>", methods=["GET", "POST"])
+def insert(username, playerScore):
     if request.method == "POST":
         with sqlite3.connect("database.db") as users:
             cursor = users.cursor()
-            # these variables are here as placeholders
-            username = "placeholder"
-            playerScore = 0
             cursor.execute("INSERT INTO leaderboard VALUES(?, ?)", (username, playerScore))
             users.commit()
             return render_template("index.html")

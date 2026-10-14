@@ -31,9 +31,9 @@ G = 0
 B = 0
 
 # Text
-retro = pygame.font.Font("../Retro_Gaming.ttf", 25)
-bigretro = pygame.font.Font("../Retro_Gaming.ttf", 50)
-biggerretro = pygame.font.Font("../Retro_Gaming.ttf", 100)
+retro = pygame.font.Font("Retro_Gaming.ttf", 25)
+bigretro = pygame.font.Font("Retro_Gaming.ttf", 50)
+biggerretro = pygame.font.Font("Retro_Gaming.ttf", 100)
 
 title = bigretro.render("EPIC DORITO SHOOTER", False, (255, 0, 0))
 subtitle = retro.render("Game of the Year Edition", False, (255, 0, 0))
@@ -54,22 +54,22 @@ submitted = retro.render("Submitted!", False, (0, 0, 0))
 nameText = retro.render("", False, (0, 0, 0))
 
 # the big l
-weegee = pygame.image.load("../weegee.png").convert_alpha()
+weegee = pygame.image.load("weegee.png").convert_alpha()
 weegeeScaled = pygame.transform.scale(weegee, (50, 100))
 weegeeRect = weegeeScaled.get_rect()
 
 # Bullet
-mtndew = pygame.image.load("../mountaindew.png").convert_alpha()
+mtndew = pygame.image.load("mountaindew.png").convert_alpha()
 dew = pygame.transform.scale(mtndew, (50, 50))
 dew_hitbox = dew.get_rect()
 
 # Enemy
-dorito = pygame.image.load("../dorito.png").convert_alpha()
+dorito = pygame.image.load("dorito.png").convert_alpha()
 dor = pygame.transform.scale(dorito, (50, 50))
 dorito_hitbox = dor.get_rect()
 
 # Player Functions
-placeholderTexture = pygame.image.load("../placeholder.png")
+placeholderTexture = pygame.image.load("placeholder.png")
 scaledPlaceholder = pygame.transform.scale(placeholderTexture, (50, 20))
 placeholder = scaledPlaceholder.get_rect()
 
