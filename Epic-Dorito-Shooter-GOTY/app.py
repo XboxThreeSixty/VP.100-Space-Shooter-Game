@@ -4,16 +4,19 @@ import sqlite3
 app = Flask(__name__)
 
 connect = sqlite3.connect("database.db")
-connect.execute("CREATE TABLE IF NOT EXISTS leaderboard (id INTEGER AUTO_INCREMENT PRIMARY KEY, username TEXT, score INTEGER)")
+connect.execute("CREATE TABLE IF NOT EXISTS leaderboard (id INT AUTO_INCREMENT PRIMARY KEY, username TEXT NOT NULL, score INT)")
 
 @app.route("/")
 def index():
-    return render_template("index.html")
+    connect = sqlite3.connect("database.db")
+    indexCursor = connect.cursor()
+    indexCursor.execute("SELECT * FROM leaderboard")
+    data = indexCursor.fetchall()
+    return render_template("index.html", data=data)
 
 @app.route("/post/<username>/<playerScore>", methods=["GET", "POST"])
 def post(username, playerScore):
     if request.method == "POST":
-        print("request method works")
         with sqlite3.connect("database.db") as users:
             cursor = users.cursor()
             cursor.execute("INSERT INTO leaderboard (username, score) VALUES(?, ?)", (username, playerScore))

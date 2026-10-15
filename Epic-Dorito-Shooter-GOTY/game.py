@@ -26,12 +26,6 @@ username = ""
 typing = False
 hasSubmitted = False
 
-# HTTP request testing
-user = "testing"
-userscore = 100
-r = requests.post("http://127.0.0.1:5000/post/"+user+"/"+str(userscore)+"")
-
-
 R = 250
 G = 0
 B = 0
@@ -235,9 +229,9 @@ def rainbowLoop(R, G, B, increment):
     return R, G, B
 
 runningLoop = True
-startMenu = False
+startMenu = True
 runningGame = False
-gameOver = True
+gameOver = False
 
 create_bullets(bullets)
 create_enemies(enemies)
@@ -375,10 +369,10 @@ while runningLoop:
                 typing = True
             elif event.type == pygame.KEYDOWN and typing:
                 if event.key == pygame.K_RETURN:
-                    typing = False
-                    if not hasSubmitted:
-                        pass
-                    hasSubmitted = True
+                    if not hasSubmitted and len(username) > 0:
+                        typing = False
+                        requests.post("http://127.0.0.1:5000/post/"+username+"/"+str(playerScore)+"")
+                        hasSubmitted = True
                 if event.key == pygame.K_ESCAPE:
                     typing = False
                 elif event.key == pygame.K_BACKSPACE:
@@ -398,6 +392,7 @@ while runningLoop:
                     gameOver = False
                     runningGame = True
                     hasSubmitted = False
+                    username = ""
 
         finalScore = retro.render("Final Score: "+str(playerScore)+"", False, (0, 0, 0))
         nameText = retro.render(username, False, (0, 0, 0))
