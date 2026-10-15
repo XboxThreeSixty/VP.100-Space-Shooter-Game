@@ -4,21 +4,24 @@ import sqlite3
 app = Flask(__name__)
 
 connect = sqlite3.connect("database.db")
+connect.execute("CREATE TABLE IF NOT EXISTS leaderboard (id INTEGER AUTO_INCREMENT PRIMARY KEY, username TEXT, score INTEGER)")
 
 @app.route("/")
 def index():
     return render_template("index.html")
 
-@app.route("/insert/<string:username>/<int:playerScore>", methods=["GET", "POST"])
-def insert(username, playerScore):
+@app.route("/post/<username>/<playerScore>", methods=["GET", "POST"])
+def post(username, playerScore):
     if request.method == "POST":
+        print("request method works")
         with sqlite3.connect("database.db") as users:
             cursor = users.cursor()
-            cursor.execute("INSERT INTO leaderboard VALUES(?, ?)", (username, playerScore))
+            cursor.execute("INSERT INTO leaderboard (username, score) VALUES(?, ?)", (username, playerScore))
             users.commit()
             return render_template("index.html")
     else:
-        pass
+        print("did not add to database")
+        return render_template("index.html")
 
 if __name__ == "__main__":
     app.run(debug = True)

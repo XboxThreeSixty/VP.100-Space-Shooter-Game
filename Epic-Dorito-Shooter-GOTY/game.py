@@ -26,6 +26,12 @@ username = ""
 typing = False
 hasSubmitted = False
 
+# HTTP request testing
+user = "testing"
+userscore = 100
+r = requests.post("http://127.0.0.1:5000/post/"+user+"/"+str(userscore)+"")
+
+
 R = 250
 G = 0
 B = 0
