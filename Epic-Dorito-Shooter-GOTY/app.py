@@ -12,7 +12,7 @@ def index():
     indexCursor = connect.cursor()
     indexCursor.execute("SELECT * FROM leaderboard")
     data = indexCursor.fetchall()
-    return render_template("index.html", data=data)
+    return render_template("index.html", items=data)
 
 @app.route("/post/<username>/<playerScore>", methods=["GET", "POST"])
 def post(username, playerScore):
