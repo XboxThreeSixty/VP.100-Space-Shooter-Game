@@ -4,7 +4,6 @@ import sqlite3
 app = Flask(__name__)
 
 connect = sqlite3.connect("database.db")
-connect.execute("CREATE TABLE IF NOT EXISTS leaderboard (id INT AUTO_INCREMENT PRIMARY KEY, username TEXT NOT NULL, score INT)")
 
 def sortingCriteria(givenTuple):
     return givenTuple[2]
@@ -41,3 +40,6 @@ def post(username, playerScore):
 
 if __name__ == "__main__":
     app.run(debug = True)
+
+# SQL command to make the leaderboard table in case I need it for whatever reason
+# CREATE TABLE IF NOT EXISTS leaderboard (id INT AUTO_INCREMENT PRIMARY KEY, username TEXT NOT NULL, score INT)
