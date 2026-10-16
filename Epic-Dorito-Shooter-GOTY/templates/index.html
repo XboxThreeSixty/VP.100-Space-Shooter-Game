@@ -3,12 +3,12 @@
     <head>
         <meta charset="UTF-8">
         <title>Epic Leaderboard</title>
-        <link rel="icon" type="image/x-icon" href="../../favicon.ico">
+        <link rel="icon" href="{{url_for('static', filename='favicon.ico')}}">
         <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet">
     </head>
     <body>
         <div class="container-fluid">
-            <h1 class="display-1 text-center">Leaderboard</h1>
+            <h1 class="display-1 text-center" id="pageHeader">Top 5 Leaderboard</h1>
         </div>
         <div class="container">
             <table class="table table-striped">
@@ -28,5 +28,6 @@
                 </tbody>
             </table>
         </div>
+        <script src="{{url_for('static', filename='main.js')}}"></script>
     </body>
 </html>
