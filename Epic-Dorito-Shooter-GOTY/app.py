@@ -15,6 +15,7 @@ def index():
     indexCursor = connect.cursor()
     indexCursor.execute("SELECT * FROM leaderboard")
     data = indexCursor.fetchall()
+    print(data)
 
     # sorting the list of tuples greatest to least and only taking the top 5
     if len(data) > 1:
