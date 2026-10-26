@@ -26,12 +26,12 @@ def index():
     return render_template("index.html", items=data)
 
 # used for HTTP requests sent by game.py
-@app.route("/post/<username>/<playerScore>", methods=["GET", "POST"])
-def post(username, playerScore):
+@app.route("/post/<username>/<playerScore>/<date>", methods=["GET", "POST"])
+def post(username, playerScore, date):
     if request.method == "POST":
         with sqlite3.connect("database.db") as users:
             cursor = users.cursor()
-            cursor.execute("INSERT INTO leaderboard (username, score) VALUES(?, ?)", (username, playerScore))
+            cursor.execute("INSERT INTO leaderboard (username, score, date) VALUES(?, ?, ?)", (username, playerScore, date))
             users.commit()
             return render_template("index.html")
     else:

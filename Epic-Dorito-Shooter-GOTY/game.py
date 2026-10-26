@@ -2,6 +2,7 @@ import pygame
 import os
 import random
 import requests
+import datetime
 os.environ['SDL_VIDEO_WINDOW_POS'] = "%d,%d" % (0,0)
 
 pygame.init()
@@ -370,8 +371,9 @@ while runningLoop:
             elif event.type == pygame.KEYDOWN and typing:
                 if event.key == pygame.K_RETURN:
                     if not hasSubmitted and len(username) > 0:
+                        date = datetime.datetime.now()
                         typing = False
-                        requests.post("http://127.0.0.1:5000/post/"+username+"/"+str(playerScore)+"")
+                        requests.post("http://127.0.0.1:5000/post/"+username+"/"+str(playerScore)+"/"+date.strftime("%x")+"")
                         hasSubmitted = True
                 if event.key == pygame.K_ESCAPE:
                     typing = False
@@ -382,16 +384,23 @@ while runningLoop:
                         username += event.unicode
             elif event.type == pygame.KEYDOWN and not typing:
                 if event.key == pygame.K_r:
+                    # reset the HUD elements
                     playerHealth = 100
                     playerScore = 0
                     magIndex = 5
                     ammo = retro.render("Ammo: 5/5", False, (255, 255, 255))
                     doritoBreaches = 0
+
+                    # clear all enemies and recreate them so that they will not be in the same position as they were when the player lost
                     enemies.clear()
                     create_enemies(enemies)
+
+                    # changing game state
                     gameOver = False
                     runningGame = True
                     hasSubmitted = False
+
+                    # reset username so it isnt the same when they lose again
                     username = ""
 
         finalScore = retro.render("Final Score: "+str(playerScore)+"", False, (0, 0, 0))
