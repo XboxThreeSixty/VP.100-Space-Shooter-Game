@@ -230,9 +230,9 @@ def rainbowLoop(R, G, B, increment):
     return R, G, B
 
 runningLoop = True
-startMenu = False
+startMenu = True
 runningGame = False
-gameOver = True
+gameOver = False
 
 create_bullets(bullets)
 create_enemies(enemies)
@@ -371,11 +371,7 @@ while runningLoop:
             elif event.type == pygame.KEYDOWN and typing:
                 if event.key == pygame.K_RETURN:
                     if not hasSubmitted and len(username) > 0:
-                        # BUG: request results in a 404 error because it interprets the date in the url as different variables.
-                        # example: POST /post/aeiou/0/10/26/26 HTTP/1.1 is what the app recieves that makes it think the date is multiple variables mdy
-
                         date = datetime.date.today()
-                        print(date)
                         typing = False
                         requests.post("http://127.0.0.1:5000/post/"+username+"/"+str(playerScore)+"/"+str(date)+"")
                         hasSubmitted = True
