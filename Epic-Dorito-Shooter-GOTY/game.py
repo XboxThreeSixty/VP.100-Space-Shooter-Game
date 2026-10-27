@@ -51,6 +51,7 @@ restartText = retro.render("press r to restart", False, (0, 0, 0))
 breachedEnd = retro.render("Too many doritos breached into the venue", False, (0, 0, 0))
 healthEnd = retro.render("The doritos rekt u m8", False, (0, 0, 0))
 submissionText = retro.render("(Optional) Click anywhere to start typing your username, press\nenter to submit it and your score to the leaderboard or esc to stop.", False, (0, 0, 0))
+altSubmissionText = retro.render("The Flask server is offline, unable to submit score", False, (0, 0, 0))
 submitted = retro.render("Submitted!", False, (0, 0, 0))
 nameText = retro.render("", False, (0, 0, 0))
 
@@ -78,8 +79,7 @@ def draw_player():
     screen.fill((0, 0, 0))
     placeholder.topleft = (x, 670)
 
-def move_player(direction):
-    global x
+def move_player(direction, x):
     if direction == "left":
         if x > 0:
             x -= 8
@@ -90,6 +90,7 @@ def move_player(direction):
             x += 8
         else: 
             x += 0
+    return x
 
 # Bullet class and Functions
 class Bullet:
@@ -289,9 +290,9 @@ while runningLoop:
         # player movement and drawing
         pressed = pygame.key.get_pressed()
         if pressed[pygame.K_a]:
-            move_player("left")
+            x = move_player("left", x)
         if pressed[pygame.K_d]:
-            move_player("right")
+            x = move_player("right", x)
 
         draw_player()
         screen.blit(scaledPlaceholder, placeholder)
