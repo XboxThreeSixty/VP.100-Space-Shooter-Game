@@ -39,8 +39,13 @@ def post(username, playerScore, date):
         print("did not add to database")
         return render_template("index.html")
 
+# used for game.py checking if the flask app is online
+@app.route("/checkstatus", methods = ["GET"])
+def status():
+    return True
+
 if __name__ == "__main__":
     app.run(debug = True)
 
 # SQL command to make the leaderboard table in case I need it for whatever reason
-# CREATE TABLE IF NOT EXISTS leaderboard (id INT AUTO_INCREMENT PRIMARY KEY, username TEXT NOT NULL, score INT)
+# CREATE TABLE leaderboard (id INTEGER AUTOINCREMENT PRIMARY KEY, username TEXT NOT NULL, score INTEGER, date TEXT)

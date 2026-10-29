@@ -3,6 +3,8 @@ import os
 import random
 import requests
 import datetime
+import time
+
 os.environ['SDL_VIDEO_WINDOW_POS'] = "%d,%d" % (0,0)
 
 pygame.init()
@@ -26,6 +28,9 @@ doritoBreaches = 0
 username = ""
 typing = False
 hasSubmitted = False
+
+flaskIsOnline = True
+statusNotChecked = True
 
 R = 250
 G = 0
@@ -231,9 +236,9 @@ def rainbowLoop(R, G, B, increment):
     return R, G, B
 
 runningLoop = True
-startMenu = True
+startMenu = False
 runningGame = False
-gameOver = False
+gameOver = True
 
 create_bullets(bullets)
 create_enemies(enemies)
@@ -367,7 +372,7 @@ while runningLoop:
             if event.type == pygame.QUIT:
                 gameOver = False
                 runningLoop = False
-            elif event.type == pygame.MOUSEBUTTONDOWN:
+            elif event.type == pygame.MOUSEBUTTONDOWN and flaskIsOnline:
                 typing = True
             elif event.type == pygame.KEYDOWN and typing:
                 if event.key == pygame.K_RETURN:
@@ -404,17 +409,35 @@ while runningLoop:
                     # reset username so it isnt the same when they lose again
                     username = ""
 
+        # Checking if flask app is online
+        if statusNotChecked:
+            try:
+                requests.get("http://127.0.0.1:5000/get/checkstatus")
+                statusNotChecked = False
+            except:
+                flaskIsOnline = False
+                statusNotChecked = False
+
+        # these two update the players score and what they're typing
         finalScore = retro.render("Final Score: "+str(playerScore)+"", False, (0, 0, 0))
         nameText = retro.render(username, False, (0, 0, 0))
+
         screen.fill((255, 0, 0))
         screen.blit(gameOverText, (300, 100))
+
         if playerHealth <= 0:
             screen.blit(healthEnd, (450, 250))
         else:
             screen.blit(breachedEnd, (300, 250))
+
         screen.blit(finalScore, (460, 300))
         screen.blit(restartText, (460, 350))
-        screen.blit(submissionText, (170, 400))
+
+        if flaskIsOnline:
+            screen.blit(submissionText, (170, 400))
+        else:
+            screen.blit(altSubmissionText, (170, 400))
+
         if hasSubmitted:
             screen.blit(submitted, (460, 475))
         else:
