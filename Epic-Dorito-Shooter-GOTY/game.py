@@ -86,13 +86,17 @@ def draw_player():
 
 def move_player(direction, x):
     if direction == "left":
-        if x > 0:
+        if x > -60:
             x -= 8
+        elif x <= 50:
+            x = 1280
         else:
             x -= 0
     elif direction == "right":
-        if x < 1230:
+        if x < 1290:
             x += 8
+        elif x >= 1280:
+            x = -50
         else: 
             x += 0
     return x
@@ -236,9 +240,9 @@ def rainbowLoop(R, G, B, increment):
     return R, G, B
 
 runningLoop = True
-startMenu = False
+startMenu = True
 runningGame = False
-gameOver = True
+gameOver = False
 
 create_bullets(bullets)
 create_enemies(enemies)
@@ -288,15 +292,15 @@ while runningLoop:
                         ammo = retro.render("Ammo: "+str(magIndex)+"/5", False, (255, 255, 255))
                     draw_bullet(x, bullets, bulletIndex, magIndex)
                 if event.key == pygame.K_r:
-                    if magIndex != 5:
+                    if magIndex <= 0:
                         magIndex = 5
                         ammo = retro.render("Ammo: 5/5", False, (255, 255, 255))
 
         # player movement and drawing
         pressed = pygame.key.get_pressed()
-        if pressed[pygame.K_a]:
+        if pressed[pygame.K_a] or pressed[pygame.K_LEFT]:
             x = move_player("left", x)
-        if pressed[pygame.K_d]:
+        if pressed[pygame.K_d] or pressed[pygame.K_RIGHT]:
             x = move_player("right", x)
 
         draw_player()
