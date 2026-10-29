@@ -55,7 +55,7 @@ breaches = retro.render("Doritos breached: 0", False, (0, 255, 0))
 levelHUD = retro.render("Level 1", False, (0, 255, 0))
 
 gameOverText = biggerretro.render("Game Over", False, (0, 0, 0))
-restartText = retro.render("press r to restart", False, (0, 0, 0))
+restartText = retro.render("press q to restart", False, (0, 0, 0))
 breachedEnd = retro.render("Too many doritos breached into the venue", False, (0, 0, 0))
 healthEnd = retro.render("The doritos rekt u m8", False, (0, 0, 0))
 submissionText = retro.render("(Optional) Click anywhere to start typing your username, press\nenter to submit it and your score to the leaderboard or esc to stop.", False, (0, 0, 0))
@@ -172,7 +172,7 @@ class Enemy:
 
 def create_enemies(enemies):
     for i in range(1, 11):
-        new_enemy = Enemy(name = "enemy_" + str(i), x = random.randrange(1, 1231), y = -50, image = dor.copy())
+        new_enemy = Enemy(name = f"enemy_{i}", x = random.randrange(1, 1231), y = -50, image = dor.copy())
         enemies.append(new_enemy)
 
 def draw_enemies():
@@ -425,7 +425,7 @@ while runningLoop:
                     if not hasSubmitted and len(username) > 0:
                         date = datetime.date.today()
                         typing = False
-                        requests.post("http://127.0.0.1:5000/post/"+username+"/"+str(playerScore)+"/"+str(date)+"")
+                        requests.post(f"http://127.0.0.1:5000/post/{username}/{playerScore}/{date}")
                         hasSubmitted = True
                 if event.key == pygame.K_ESCAPE:
                     typing = False
@@ -435,7 +435,7 @@ while runningLoop:
                     if len(username) < 21:
                         username += event.unicode
             elif event.type == pygame.KEYDOWN and not typing:
-                if event.key == pygame.K_r:
+                if event.key == pygame.K_q:
                     # reset the HUD elements
                     playerHealth = 100
                     playerScore = 0
