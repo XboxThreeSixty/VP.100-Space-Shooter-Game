@@ -32,6 +32,8 @@ hasSubmitted = False
 flaskIsOnline = True
 statusNotChecked = True
 
+level = 1
+
 R = 250
 G = 0
 B = 0
@@ -50,6 +52,7 @@ ammo = retro.render("Ammo: 5/5", False, (255, 255, 255))
 health = retro.render("Health: 100%", False, (0, 255, 0))
 score = retro.render("Score: 0", False, (255, 0, 0))
 breaches = retro.render("Doritos breached: 0", False, (0, 255, 0))
+levelHUD = retro.render("Level 1", False, (0, 255, 0))
 
 gameOverText = biggerretro.render("Game Over", False, (0, 0, 0))
 restartText = retro.render("press r to restart", False, (0, 0, 0))
@@ -127,7 +130,7 @@ class Bullet:
 
 def create_bullets(bullets):
     for i in range(1, 6):
-        new_bullet = Bullet(name = "bullet_" + str(i), x = 1, y = -150, image = dew.copy())
+        new_bullet = Bullet(name = f"bullet_{i}", x = 1, y = -150, image = dew.copy())
         bullets.append(new_bullet)
 
 def draw_bullet(x, bullets, bulletIndex, magIndex):
@@ -180,10 +183,21 @@ def draw_enemies():
         enemies[i].y(-50)
         enemies[i].x(random.randrange(1, 1231))
 
-def update_enemy(i):
+def update_enemy(i, level):
     enemies[i]._rect.y = enemies[i].get_y()
     if enemies[i].get_y() < 720:
-        enemies[i].y(enemies[i].get_y() + 1.5)
+        if level == 1:
+            enemies[i].y(enemies[i].get_y() + 1.5)
+        elif level == 2:
+            enemies[i].y(enemies[i].get_y() + 1.6)
+        elif level == 3:
+            enemies[i].y(enemies[i].get_y() + 1.7)
+        elif level == 4:
+            enemies[i].y(enemies[i].get_y() + 1.8)
+        elif level == 5:
+            enemies[i].y(enemies[i].get_y() + 1.9)
+        elif level == 6:
+            enemies[i].y(enemies[i].get_y() + 2.0)
 
 # Collision
 def checkEnemyCollision(playerScore):
@@ -239,6 +253,19 @@ def rainbowLoop(R, G, B, increment):
             B = 0
     return R, G, B
 
+def updateLevel(level, playerScore):
+    if playerScore >= 500 and playerScore < 1000:
+        level = 2
+    elif playerScore >= 1000 and playerScore < 1500:
+        level = 3
+    elif playerScore >= 1500 and playerScore < 2000:
+        level = 4
+    elif playerScore >= 2000 and playerScore < 2500:
+        level = 5
+    elif playerScore >= 3000:
+        level = 6
+    return level
+
 runningLoop = True
 startMenu = True
 runningGame = False
@@ -289,10 +316,10 @@ while runningLoop:
                     
                     magIndex -= 1
                     if magIndex >= 0:
-                        ammo = retro.render("Ammo: "+str(magIndex)+"/5", False, (255, 255, 255))
+                        ammo = retro.render(f"Ammo: {magIndex}/5", False, (255, 255, 255))
                     draw_bullet(x, bullets, bulletIndex, magIndex)
                 if event.key == pygame.K_r:
-                    if magIndex <= 0:
+                    if magIndex < 5:
                         magIndex = 5
                         ammo = retro.render("Ammo: 5/5", False, (255, 255, 255))
 
@@ -309,24 +336,35 @@ while runningLoop:
         # updating HUD values
         playerHealth = checkPlayerCollision(playerHealth)
         if playerHealth == 100:
-            health = retro.render("Health: "+str(playerHealth)+"%", False, (0, 255, 0))
+            health = retro.render(f"Health: {playerHealth}%", False, (0, 255, 0))
         elif playerHealth == 66:
-            health = retro.render("Health: "+str(playerHealth)+"%", False, (255, 255, 0))
+            health = retro.render(f"Health: {playerHealth}%", False, (255, 255, 0))
         else:
-            health = retro.render("Health: "+str(playerHealth)+"%", False, (255, 0, 0))
+            health = retro.render(f"Health: {playerHealth}%", False, (255, 0, 0))
 
         playerScore = checkEnemyCollision(playerScore)
-        score = retro.render("Score: "+str(playerScore)+"", False, (R, G, B))
+        score = retro.render(f"Score: {playerScore}", False, (R, G, B))
         R, G, B = rainbowLoop(R, G, B, 8)
 
         if doritoBreaches <= 2:
-            breaches = retro.render("Doritos breached: "+str(doritoBreaches)+"", False, (0, 255, 0))
+            breaches = retro.render(f"Doritos breached: {doritoBreaches}", False, (0, 255, 0))
         elif doritoBreaches <= 4:
-            breaches = retro.render("Doritos breached: "+str(doritoBreaches)+"", False, (255, 255, 0))
+            breaches = retro.render(f"Doritos breached: {doritoBreaches}", False, (255, 255, 0))
         elif doritoBreaches <= 6:
-            breaches = retro.render("Doritos breached: "+str(doritoBreaches)+"", False, (255, 165, 0))
+            breaches = retro.render(f"Doritos breached: {doritoBreaches}", False, (255, 165, 0))
         else:
-            breaches = retro.render("Doritos breached: "+str(doritoBreaches)+"", False, (255, 0, 0))
+            breaches = retro.render(f"Doritos breached: {doritoBreaches}", False, (255, 0, 0))
+
+        if level == 2:
+            levelHUD = retro.render(f"Level {level}", False, (200, 255, 0))
+        elif level == 3:
+            levelHUD = retro.render(f"Level {level}", False, (255, 255, 0))
+        elif level == 4:
+            levelHUD = retro.render(f"Level {level}", False, (255, 165, 0))
+        elif level == 5:
+            levelHUD = retro.render(f"Level {level}", False, (255, 100, 0))
+        elif level == 6:
+            levelHUD = retro.render(f"Level {level}", False, (255, 0, 0))
 
         # Lose conditions
         if playerHealth <= 0:
@@ -335,6 +373,9 @@ while runningLoop:
         if doritoBreaches >= 8:
             runningGame = False
             gameOver = True
+
+        # updating the level
+        level = updateLevel(level, playerScore)
 
         # updating and drawing the bullets
         i = 0
@@ -352,7 +393,7 @@ while runningLoop:
 
         for i in range(len(enemies)):
             if enemies[i].check():
-                update_enemy(i)
+                update_enemy(i, level)
 
         for i in range(len(enemies)):
             screen.blit(enemies[i]._image, enemies[i]._rect)
@@ -368,6 +409,7 @@ while runningLoop:
         screen.blit(health, (1, 25))
         screen.blit(score, (1, 50))
         screen.blit(breaches, (1, 75))
+        screen.blit(levelHUD, (1160, 1))
 
         pygame.display.update()
         clock.tick(60)
@@ -400,6 +442,7 @@ while runningLoop:
                     magIndex = 5
                     ammo = retro.render("Ammo: 5/5", False, (255, 255, 255))
                     doritoBreaches = 0
+                    level = 1
 
                     # clear all enemies and recreate them so that they will not be in the same position as they were when the player lost
                     enemies.clear()
@@ -423,7 +466,7 @@ while runningLoop:
                 statusNotChecked = False
 
         # these two update the players score and what they're typing
-        finalScore = retro.render("Final Score: "+str(playerScore)+"", False, (0, 0, 0))
+        finalScore = retro.render(f"Final Score: {playerScore}", False, (0, 0, 0))
         nameText = retro.render(username, False, (0, 0, 0))
 
         screen.fill((255, 0, 0))
