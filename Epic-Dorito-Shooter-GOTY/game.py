@@ -3,7 +3,6 @@ import os
 import random
 import requests
 import datetime
-import time
 
 os.environ['SDL_VIDEO_WINDOW_POS'] = "%d,%d" % (0,0)
 
